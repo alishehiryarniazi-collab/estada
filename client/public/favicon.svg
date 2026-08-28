@@ -1,0 +1,23 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Estada">
+  <!-- Estada mark: a house/roof silhouette carrying a verification check.
+       Single-colour, flat (no gradients / 3D) so it stays crisp at favicon size. -->
+  <!-- Rounded navy tile keeps the mark visible on any background as a favicon. -->
+  <rect width="64" height="64" rx="14" fill="#0F2A47" />
+  <!-- House body + roof, drawn in white so it reads clearly on the navy tile. -->
+  <path
+    d="M32 14 L48 27 V47 a3 3 0 0 1-3 3 H19 a3 3 0 0 1-3-3 V27 Z"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="3.5"
+    stroke-linejoin="round"
+  />
+  <!-- Verification check inside the house — the core "verified property" idea. -->
+  <path
+    d="M25 35 l5 5 l9-11"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading text-ink;
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  /* Reusable design-system primitives. Full component kit is built in Milestone 2;
+     these tokens keep buttons consistent from the start. */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5
+           text-sm font-medium transition-colors focus:outline-none
+           focus-visible:ring-2 focus-visible:ring-offset-2;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-light focus-visible:ring-primary;
+  }
+  .btn-cta {
+    @apply btn bg-cta text-white hover:bg-cta-hover focus-visible:ring-cta;
+  }
+  .btn-ghost {
+    @apply btn border border-hairline bg-white text-ink hover:bg-canvas focus-visible:ring-primary;
+  }
+}
+
+/* Map price markers (Leaflet divIcon html is runtime, so styled with plain CSS). */
+.price-pin {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  background: #0f2a47;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(15, 42, 71, 0.35);
+  transform: translate(-50%, -50%);
+}
+.price-pin.rent {
+  background: #1d6e4f;
+}
+.leaflet-container {
+  font-family: inherit;
+}

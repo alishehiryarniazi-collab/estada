@@ -1,0 +1,299 @@
+// Estada — Real Estate Listing Platform
+// Prisma schema (MySQL 8)
+//
+// MySQL note: Prisma maps `String` to VARCHAR(191) by default. Fields that can
+// hold longer text use explicit @db.Text / @db.VarChar so nothing is truncated.
+//
+// Design note: ALL Phase-2 structures live here from day one so we never
+// need a painful migration later. price_history, analytics counters
+// (viewCount/saveCount/enquiryCount) and the isFeatured monetization flag
+// are all present now, even though their UI is built in later milestones.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------- ENUMS -----------------------------
+
+enum Role {
+  buyer
+  dealer
+  owner
+  admin
+}
+
+enum ListingType {
+  sale
+  rent
+}
+
+enum PropertyType {
+  house
+  plot
+  flat
+  commercial
+  agricultural
+}
+
+enum AreaUnit {
+  marla
+  sqft
+}
+
+enum PropertyStatus {
+  active
+  under_offer
+  sold
+  expired
+}
+
+enum VerificationStatus {
+  pending
+  verified
+  rejected
+}
+
+enum ReportStatus {
+  pending
+  reviewed
+  dismissed
+}
+
+enum EnquiryStatus {
+  open
+  closed
+}
+
+enum AlertFrequency {
+  instant
+  daily
+  weekly
+}
+
+// ----------------------------- MODELS -----------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String?  @map("password_hash") // nullable: Google-only accounts have no local password
+  phone        String?
+  role         Role     @default(buyer)
+  cnicNumber   String?  @map("cnic_number") // dealers/owners provide CNIC for identity verification
+  isVerified   Boolean  @default(false) @map("is_verified")
+  googleId     String?  @unique @map("google_id") // set when the user signs in with Google OAuth
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  dealerProfile   DealerProfile?
+  properties      Property[]      @relation("DealerProperties")
+  savedSearches   SavedSearch[]
+  savedProperties SavedProperty[]
+  enquiries       Enquiry[]       @relation("BuyerEnquiries")
+  messages        Message[]       @relation("SentMessages")
+  reports         Report[]        @relation("ReportedBy")
+
+  @@map("users")
+}
+
+model DealerProfile {
+  id                 String             @id @default(cuid())
+  userId             String             @unique @map("user_id")
+  businessName       String             @map("business_name")
+  bio                String?            @db.Text
+  profilePhotoUrl    String?            @map("profile_photo_url") @db.VarChar(500)
+  verificationStatus VerificationStatus @default(pending) @map("verification_status")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("dealer_profiles")
+}
+
+model Property {
+  id           String       @id @default(cuid())
+  dealerId     String       @map("dealer_id") // the listing user (dealer OR individual owner)
+  title        String
+  description  String       @db.Text
+  propertyType PropertyType @map("property_type")
+  listingType  ListingType  @map("listing_type")
+  price        Decimal      @db.Decimal(14, 2) // PKR; big enough for crores
+  areaValue    Decimal      @map("area_value") @db.Decimal(12, 2)
+  areaUnit     AreaUnit     @map("area_unit")
+  // Normalised area in square feet — computed from areaValue+areaUnit on save.
+  // Lets us filter/sort by area across mixed units (marla & sqft) in one query.
+  areaSqft     Float        @map("area_sqft")
+  bedrooms     Int?
+  bathrooms    Int?
+
+  // Location
+  address  String @db.VarChar(255) // full/exact address — revealed publicly only AFTER an enquiry
+  lat      Float
+  lng      Float
+  city     String
+  areaName String @map("area_name")
+
+  status             PropertyStatus @default(active)
+  // Draft listings are saved but not yet published (hidden from public search).
+  isDraft            Boolean        @default(false) @map("is_draft")
+  isDocumentVerified Boolean        @default(false) @map("is_document_verified")
+  floorPlanUrl       String?        @map("floor_plan_url") @db.VarChar(500)
+
+  // Phase-2 analytics counters (structured now, dashboard UI later)
+  viewCount    Int @default(0) @map("view_count")
+  saveCount    Int @default(0) @map("save_count")
+  enquiryCount Int @default(0) @map("enquiry_count")
+
+  // Phase-2 monetization flag (structured now, UI later)
+  isFeatured Boolean @default(false) @map("is_featured")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  expiresAt DateTime? @map("expires_at") // auto-expiry after 30 days
+
+  // Relations
+  dealer       User               @relation("DealerProperties", fields: [dealerId], references: [id], onDelete: Cascade)
+  images       PropertyImage[]
+  documents    PropertyDocument[]
+  priceHistory PriceHistory[]
+  savedBy      SavedProperty[]
+  enquiries    Enquiry[]
+  reports      Report[]
+
+  @@index([city])
+  @@index([propertyType])
+  @@index([listingType])
+  @@index([status])
+  @@index([price])
+  @@index([areaSqft])
+  @@map("properties")
+}
+
+model PropertyImage {
+  id         String  @id @default(cuid())
+  propertyId String  @map("property_id")
+  imageUrl   String  @map("image_url") @db.VarChar(500)
+  isPrimary  Boolean @default(false) @map("is_primary")
+  sortOrder  Int     @default(0) @map("sort_order")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_images")
+}
+
+model PropertyDocument {
+  id                 String             @id @default(cuid())
+  propertyId         String             @map("property_id")
+  documentUrl        String             @map("document_url") @db.VarChar(500)
+  documentType       String?            @map("document_type") // e.g. "registry", "allotment_letter"
+  verificationStatus VerificationStatus @default(pending) @map("verification_status")
+  createdAt          DateTime           @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_documents")
+}
+
+// Phase-2 UI, but table MUST exist from day one — price changes cannot be backfilled.
+model PriceHistory {
+  id         String   @id @default(cuid())
+  propertyId String   @map("property_id")
+  oldPrice   Decimal  @map("old_price") @db.Decimal(14, 2)
+  newPrice   Decimal  @map("new_price") @db.Decimal(14, 2)
+  changedAt  DateTime @default(now()) @map("changed_at")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("price_history")
+}
+
+model SavedSearch {
+  id             String         @id @default(cuid())
+  userId         String         @map("user_id")
+  searchParams   Json           @map("search_params") // stored filter set for alert matching
+  alertFrequency AlertFrequency @default(daily) @map("alert_frequency")
+  lastAlertedAt  DateTime?      @map("last_alerted_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("saved_searches")
+}
+
+model SavedProperty {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  propertyId String   @map("property_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId]) // a user can shortlist a property only once
+  @@index([userId])
+  @@map("saved_properties")
+}
+
+model Enquiry {
+  id         String        @id @default(cuid())
+  propertyId String        @map("property_id")
+  buyerId    String        @map("buyer_id")
+  message    String        @db.Text
+  status     EnquiryStatus @default(open)
+
+  // Phone numbers stay hidden until BOTH parties opt to share inside the chat.
+  phoneSharedByBuyer  Boolean @default(false) @map("phone_shared_by_buyer")
+  phoneSharedByDealer Boolean @default(false) @map("phone_shared_by_dealer")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  buyer    User      @relation("BuyerEnquiries", fields: [buyerId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([propertyId])
+  @@index([buyerId])
+  @@map("enquiries")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  enquiryId String   @map("enquiry_id")
+  senderId  String   @map("sender_id")
+  content   String   @db.Text
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  enquiry Enquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  sender  User    @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([enquiryId])
+  @@map("messages")
+}
+
+model Report {
+  id           String       @id @default(cuid())
+  propertyId   String       @map("property_id")
+  reportedById String       @map("reported_by")
+  reason       String       @db.Text
+  status       ReportStatus @default(pending)
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  reportedBy User     @relation("ReportedBy", fields: [reportedById], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([status])
+  @@map("reports")
+}

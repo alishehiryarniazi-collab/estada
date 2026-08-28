@@ -1,0 +1,39 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'node:path';
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  // Pin the project root to this folder so the dev server serves the client
+  // correctly even when launched from a different working directory.
+  root: path.resolve(__dirname),
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+    // Ensure a single React instance (guards against "Invalid hook call").
+    dedupe: ['react', 'react-dom'],
+  },
+  server: {
+    port: 5176,
+    // Proxy API calls to the Express server in dev so cookies stay same-origin.
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      // Locally-stored uploads are served by the API in dev.
+      '/uploads': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      // Socket.IO real-time chat (WebSocket).
+      '/socket.io': {
+        target: 'http://localhost:5000',
+        ws: true,
+        changeOrigin: true,
+      },
+    },
+  },
+});
