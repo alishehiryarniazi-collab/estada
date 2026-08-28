@@ -12,6 +12,11 @@ Real estate listing platform for the Pakistani market. Dealers/owners list prope
 - **Auth: JWT in httpOnly cookies + bcrypt.** Google OAuth added in a later milestone; email/password first so nothing is blocked.
 - **Money format:** one reusable PKR lakh/crore utility (built in Milestone 1) — never repeat the logic per component.
 
+## Git / GitHub
+- Repo: https://github.com/alishehiryarniazi-collab/estada (public). Remote `origin`, branch `main`.
+- Workflow going forward: make change → `git add -A` → `git commit -m "..."` → `git push`. Keep commits small & logical.
+- Secrets stay local: `server/.env`, `client/.env`, `server/uploads/`, `node_modules/`, build output are all gitignored. Only `.env.example` templates are committed.
+
 ## Build sequence (milestones)
 - [x] **M0 — Scaffold & foundations:** monorepo, TS, Tailwind design system (full palette + fonts), ESLint/Prettier, **complete Prisma schema (all tables + Phase-2 fields)**, env validation, Express skeleton + health route, error-handling foundation, Estada icon mark/favicon, README + these notes.
 - [x] **M1 — Backend core:** JWT auth (register/login/logout/me, bcrypt, httpOnly cookies), properties CRUD + search/filter API (keyword, price, type, beds/baths, area cross-unit, map bounds, sort, cursor pagination), Zod validation + XSS sanitize, rate-limiting (auth + write actions), PKR format util, area normalisation (areaSqft), address-privacy offset, price_history logging on price change, seed (16 PK listings + admin/dealer/buyer). Middleware pipeline verified via curl (validation/auth/enum/CNIC-rule all correct). **Runtime DB verification (migrate+seed+live endpoints) PENDING a Postgres connection string — no local Postgres/Docker on this machine.**
