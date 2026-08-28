@@ -28,6 +28,8 @@ router.get(
   asyncHandler(controller.myListings),
 );
 router.get('/:id', optionalAuth, asyncHandler(controller.detail));
+// Fair-price insight + price history for a listing (public).
+router.get('/:id/price-insight', asyncHandler(controller.priceInsight));
 
 // Listing management — dealers, owners (and admins) only.
 router.post(

@@ -3,6 +3,7 @@
  */
 import type { Request, Response } from 'express';
 import * as propertyService from '../services/propertyService.js';
+import { getPriceInsight } from '../services/priceInsightService.js';
 
 export async function list(req: Request, res: Response) {
   // req.query has already been validated/coerced by the search schema.
@@ -51,6 +52,11 @@ export async function renew(req: Request, res: Response) {
     req.user!.role,
   );
   res.json({ property });
+}
+
+export async function priceInsight(req: Request, res: Response) {
+  const data = await getPriceInsight(req.params.id);
+  res.json(data);
 }
 
 export async function confirmAvailable(req: Request, res: Response) {

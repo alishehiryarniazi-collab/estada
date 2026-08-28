@@ -13,6 +13,7 @@ import SpecTable from '../components/listing/SpecTable';
 import LocationMap from '../components/listing/LocationMap';
 import EnquiryForm from '../components/listing/EnquiryForm';
 import ReportButton from '../components/listing/ReportButton';
+import PriceInsight from '../components/listing/PriceInsight';
 import Badge from '../components/ui/Badge';
 import HeartButton from '../components/ui/HeartButton';
 import Skeleton from '../components/ui/Skeleton';
@@ -163,6 +164,9 @@ export default function ListingDetailPage() {
               <h2 className="mb-2 font-heading text-xl font-semibold text-ink">Details</h2>
               <SpecTable property={property} />
             </section>
+
+            {/* Fair-price insight + price history */}
+            <PriceInsight propertyId={property.id} />
 
             {/* Floor plan (optional) */}
             {property.floorPlanUrl && (

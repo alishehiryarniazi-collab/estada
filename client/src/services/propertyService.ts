@@ -103,3 +103,19 @@ export async function renewListing(id: string): Promise<void> {
 export async function confirmAvailability(id: string): Promise<void> {
   await api.patch(`/properties/${id}/confirm`);
 }
+
+export interface PriceInsightData {
+  insight: {
+    enoughData: boolean;
+    comparablesCount: number;
+    estimate?: number;
+    deltaPercent?: number;
+    verdict?: 'above' | 'fair' | 'below' | 'suspicious';
+  };
+  history: { oldPrice: string; newPrice: string; changedAt: string }[];
+}
+
+export async function getPriceInsight(id: string): Promise<PriceInsightData> {
+  const { data } = await api.get<PriceInsightData>(`/properties/${id}/price-insight`);
+  return data;
+}

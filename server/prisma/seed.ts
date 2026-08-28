@@ -294,6 +294,35 @@ const LISTINGS: Listing[] = [
     address: 'Plot 9, Green Acres, Bedian Road, Lahore',
     verified: true,
   },
+
+  // --- Cluster of similar DHA Lahore houses (sale) so the Fair-Price feature
+  // has enough comparables. Most are around the market rate; one is clearly
+  // overpriced and one is suspiciously cheap (to demo those verdicts).
+  ...([
+    { p: 31_000_000, a: 10, name: 'A' },
+    { p: 33_000_000, a: 10, name: 'B' },
+    { p: 29_500_000, a: 9, name: 'C' },
+    { p: 35_000_000, a: 11, name: 'D' },
+    { p: 32_000_000, a: 10, name: 'E' },
+    { p: 34_000_000, a: 10, name: 'F' },
+    { p: 47_000_000, a: 10, name: 'G' }, // deliberately ABOVE market
+    { p: 18_500_000, a: 10, name: 'H' }, // deliberately SUSPICIOUSLY low
+  ].map((h, idx) => ({
+    title: `${h.a} Marla House in DHA Phase 5 (Block ${h.name})`,
+    description:
+      'Well-built house in a prime DHA Phase 5 block — three to four bedrooms, drawing/dining, modern kitchen, car porch and a small lawn. Secure, well-connected location close to parks and commercial area.',
+    propertyType: 'house' as const,
+    listingType: 'sale' as const,
+    price: h.p,
+    areaValue: h.a,
+    areaUnit: 'marla' as const,
+    bedrooms: 4,
+    bathrooms: 4,
+    city: 'Lahore' as const,
+    areaName: 'DHA Phase 5',
+    address: `House ${100 + idx}, Block ${h.name}, DHA Phase 5, Lahore`,
+    verified: idx % 3 === 0,
+  }))),
 ];
 
 async function main() {
@@ -358,13 +387,14 @@ async function main() {
   });
 
   // Create listings owned by the demo dealer.
+  const createdRefs: { id: string; price: number }[] = [];
   let i = 0;
   for (const l of LISTINGS) {
     const base = CITIES[l.city];
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
-    await prisma.property.create({
+    const created = await prisma.property.create({
       data: {
         dealerId: dealer.id,
         title: l.title,
@@ -395,10 +425,28 @@ async function main() {
         },
       },
     });
+    createdRefs.push({ id: created.id, price: l.price });
     i++;
   }
 
-  console.info(`✅ Seeded ${LISTINGS.length} listings + 3 demo accounts.`);
+  // Simulate a couple of price reductions so the price-history feature has data.
+  // (Records the old→new change AND lowers the current price.)
+  const drops = [
+    { ref: createdRefs[2], factor: 0.92 }, // 5 Marla House in Model Town -8%
+    { ref: createdRefs[8], factor: 0.9 }, // 7 Marla House in Bahria Town Phase 8 -10%
+  ];
+  for (const { ref, factor } of drops) {
+    if (!ref) continue;
+    const newPrice = Math.round(ref.price * factor);
+    const changedAt = new Date();
+    changedAt.setDate(changedAt.getDate() - 5); // dropped 5 days ago
+    await prisma.priceHistory.create({
+      data: { propertyId: ref.id, oldPrice: ref.price, newPrice, changedAt },
+    });
+    await prisma.property.update({ where: { id: ref.id }, data: { price: newPrice } });
+  }
+
+  console.info(`✅ Seeded ${LISTINGS.length} listings + 3 demo accounts (2 with price drops).`);
   console.info('   admin@estada.app / Admin@123');
   console.info('   dealer@estada.app / Dealer@123');
   console.info('   buyer@estada.app / Buyer@123');
