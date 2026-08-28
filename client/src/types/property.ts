@@ -29,6 +29,7 @@ export interface PropertyCard {
   lat: number;
   lng: number;
   createdAt: string;
+  lastConfirmedAt: string;
   approximate: boolean;
   images: PropertyImage[];
 }
@@ -73,6 +74,7 @@ export interface PropertyDetail {
   floorPlanUrl: string | null;
   viewCount: number;
   createdAt: string;
+  lastConfirmedAt: string;
   approximate: boolean;
   images: { imageUrl: string; isPrimary: boolean; sortOrder: number }[];
   dealer: DealerInfo;

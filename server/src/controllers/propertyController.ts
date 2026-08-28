@@ -53,6 +53,15 @@ export async function renew(req: Request, res: Response) {
   res.json({ property });
 }
 
+export async function confirmAvailable(req: Request, res: Response) {
+  const property = await propertyService.confirmAvailability(
+    req.params.id,
+    req.user!.userId,
+    req.user!.role,
+  );
+  res.json({ property });
+}
+
 /** The logged-in dealer's own listings (including drafts) for their dashboard. */
 export async function myListings(req: Request, res: Response) {
   const items = await propertyService.getMyListings(req.user!.userId);

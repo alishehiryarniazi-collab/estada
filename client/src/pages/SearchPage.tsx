@@ -46,6 +46,7 @@ export default function SearchPage() {
     }
     const unit = searchParams.get('areaUnit');
     if (unit === 'marla' || unit === 'sqft') p.areaUnit = unit;
+    if (searchParams.get('verifiedOnly') === 'true') p.verifiedOnly = true;
     if (searchAsMove && bounds) Object.assign(p, bounds);
     return p;
   }, [searchParams, searchAsMove, bounds]);
@@ -102,6 +103,7 @@ export default function SearchPage() {
     if (v.minArea) next.set('minArea', v.minArea);
     if (v.maxArea) next.set('maxArea', v.maxArea);
     if ((v.minArea || v.maxArea) && v.areaUnit) next.set('areaUnit', v.areaUnit);
+    if (v.verifiedOnly) next.set('verifiedOnly', 'true');
     const sort = searchParams.get('sort');
     if (sort) next.set('sort', sort);
     setSearchParams(next);
@@ -125,6 +127,7 @@ export default function SearchPage() {
     minArea: searchParams.get('minArea') || '',
     maxArea: searchParams.get('maxArea') || '',
     areaUnit: searchParams.get('areaUnit') || 'marla',
+    verifiedOnly: searchParams.get('verifiedOnly') === 'true',
   };
 
   return (

@@ -4,7 +4,7 @@
  * The single coral CTA on this screen is the Apply button.
  */
 import { useState } from 'react';
-import { SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { SlidersHorizontal, RotateCcw, ShieldCheck } from 'lucide-react';
 
 export interface FilterValues {
   q: string;
@@ -17,6 +17,7 @@ export interface FilterValues {
   minArea: string;
   maxArea: string;
   areaUnit: string;
+  verifiedOnly: boolean;
 }
 
 const EMPTY: FilterValues = {
@@ -30,6 +31,7 @@ const EMPTY: FilterValues = {
   minArea: '',
   maxArea: '',
   areaUnit: 'marla',
+  verifiedOnly: false,
 };
 
 const field = 'rounded-lg border border-hairline bg-white px-3 py-2 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
@@ -122,6 +124,21 @@ export default function SearchFilters({
               <option value="sqft">sq ft</option>
             </select>
           </div>
+
+          {/* Trust filter — verified-documents listings only */}
+          <label
+            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+              draft.verifiedOnly ? 'border-verify bg-verify-light text-verify' : 'border-hairline text-ink hover:bg-canvas'
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={draft.verifiedOnly}
+              onChange={(e) => setDraft((d) => ({ ...d, verifiedOnly: e.target.checked }))}
+              className="sr-only"
+            />
+            <ShieldCheck size={15} /> Verified only
+          </label>
 
           <button
             onClick={() => onApply(draft)}

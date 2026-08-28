@@ -17,6 +17,7 @@ export interface SearchParams {
   minArea?: number;
   maxArea?: number;
   areaUnit?: 'marla' | 'sqft';
+  verifiedOnly?: boolean;
   sort?: 'newest' | 'price_asc' | 'price_desc' | 'area_desc';
   cursor?: string;
   limit?: number;
@@ -54,6 +55,7 @@ interface PropertyDetailLite {
   areaName: string;
   status: string;
   isDocumentVerified: boolean;
+  lastConfirmedAt: string;
   images: { imageUrl: string }[];
 }
 
@@ -96,4 +98,8 @@ export async function updateListingStatus(id: string, status: string): Promise<v
 
 export async function renewListing(id: string): Promise<void> {
   await api.patch(`/properties/${id}/renew`);
+}
+
+export async function confirmAvailability(id: string): Promise<void> {
+  await api.patch(`/properties/${id}/confirm`);
 }

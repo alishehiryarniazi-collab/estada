@@ -55,6 +55,9 @@ router.patch(
 // Renew a listing for another 30 days.
 router.patch('/:id/renew', requireAuth, asyncHandler(controller.renew));
 
+// Confirm a listing is still available (freshness signal).
+router.patch('/:id/confirm', requireAuth, asyncHandler(controller.confirmAvailable));
+
 // Report a listing (auth + rate-limited to curb abuse).
 router.post(
   '/:id/report',

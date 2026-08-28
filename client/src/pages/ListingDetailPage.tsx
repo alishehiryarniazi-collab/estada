@@ -5,7 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, BedDouble, Bath, Maximize, MapPin, ShieldCheck, BadgeCheck } from 'lucide-react';
+import { ArrowLeft, BedDouble, Bath, Maximize, MapPin, ShieldCheck, BadgeCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Gallery from '../components/listing/Gallery';
@@ -19,6 +19,7 @@ import Skeleton from '../components/ui/Skeleton';
 import { getProperty } from '../services/propertyService';
 import { apiErrorMessage } from '../lib/api';
 import { formatPricePKRLabeled, formatArea } from '../utils/formatPrice';
+import { getFreshness } from '../utils/freshness';
 import { useAuthStore } from '../store/authStore';
 import type { PropertyDetail } from '../types/property';
 
@@ -109,6 +110,17 @@ export default function ListingDetailPage() {
               {formatPricePKRLabeled(property.price)}
               {perMonth && <span className="text-lg font-normal text-ink-muted"> / month</span>}
             </p>
+
+            {/* Freshness — how recently the dealer confirmed availability */}
+            {(() => {
+              const fresh = getFreshness(property.lastConfirmedAt);
+              return (
+                <p className={`mt-1 flex items-center gap-1.5 text-sm ${fresh.stale ? 'text-cta' : 'text-ink-muted'}`}>
+                  {fresh.stale ? <AlertTriangle size={15} /> : <CheckCircle2 size={15} />}
+                  {fresh.label}
+                </p>
+              );
+            })()}
 
             {/* Key specs */}
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-y border-hairline py-3 text-ink">

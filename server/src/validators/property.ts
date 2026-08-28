@@ -56,6 +56,9 @@ export const searchQuerySchema = z.object({
   maxArea: z.coerce.number().nonnegative().optional(),
   areaUnit: areaUnit.default('sqft'), // unit that min/maxArea are expressed in
 
+  // Trust filter: only show listings with verified ownership documents.
+  verifiedOnly: z.coerce.boolean().optional(),
+
   // Map bounds for "search as you move the map" (all four required together).
   neLat: z.coerce.number().optional(),
   neLng: z.coerce.number().optional(),

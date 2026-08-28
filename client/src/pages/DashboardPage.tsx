@@ -9,8 +9,9 @@ import { Plus, Eye, Heart, MessageSquare, Trash2, Search } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Badge from '../components/ui/Badge';
-import { getMyListings, updateListingStatus, updateListing, renewListing, type MyListing } from '../services/propertyService';
+import { getMyListings, updateListingStatus, updateListing, renewListing, confirmAvailability, type MyListing } from '../services/propertyService';
 import { uploadDocument } from '../services/documentService';
+import { getFreshness } from '../utils/freshness';
 import { listSavedSearches, deleteSavedSearch, type SavedSearch } from '../services/savedService';
 import { formatPricePKRLabeled } from '../utils/formatPrice';
 import { apiErrorMessage } from '../lib/api';
@@ -63,6 +64,10 @@ export default function DashboardPage() {
   };
   const renew = async (id: string) => {
     await renewListing(id);
+    load();
+  };
+  const confirmAvail = async (id: string) => {
+    await confirmAvailability(id);
     load();
   };
   const [docMsg, setDocMsg] = useState<string | null>(null);
@@ -143,6 +148,11 @@ export default function DashboardPage() {
                         <span className="flex items-center gap-1"><Heart size={13} /> {l.saveCount}</span>
                         <span className="flex items-center gap-1"><MessageSquare size={13} /> {l.enquiryCount}</span>
                       </div>
+                      {!l.isDraft && (
+                        <p className={`mt-1 text-xs ${getFreshness(l.lastConfirmedAt).stale ? 'text-cta' : 'text-ink-muted'}`}>
+                          {getFreshness(l.lastConfirmedAt).label}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       {l.isDraft ? (
@@ -165,6 +175,15 @@ export default function DashboardPage() {
                       {l.status === 'expired' && (
                         <button onClick={() => renew(l.id)} className="rounded-lg bg-verify px-3 py-1.5 text-xs font-medium text-white">
                           Renew
+                        </button>
+                      )}
+                      {!l.isDraft && l.status === 'active' && (
+                        <button
+                          onClick={() => confirmAvail(l.id)}
+                          className="rounded-lg border border-verify px-3 py-1.5 text-xs font-medium text-verify hover:bg-verify-light"
+                          title="Confirm this listing is still available"
+                        >
+                          Confirm available
                         </button>
                       )}
                       <label className="cursor-pointer rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink hover:bg-canvas" title="Upload ownership document for verification">

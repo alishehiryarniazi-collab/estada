@@ -4,9 +4,10 @@
  * specs and location. Hover lifts the card with a subtle shadow.
  */
 import { Link } from 'react-router-dom';
-import { BedDouble, Bath, Maximize, MapPin, Home } from 'lucide-react';
+import { BedDouble, Bath, Maximize, MapPin, Home, CheckCircle2, AlertTriangle } from 'lucide-react';
 import type { PropertyCard as Card } from '../types/property';
 import { formatPricePKRLabeled, formatArea } from '../utils/formatPrice';
+import { getFreshness } from '../utils/freshness';
 import Badge from './ui/Badge';
 import HeartButton from './ui/HeartButton';
 
@@ -21,6 +22,7 @@ const TYPE_LABEL: Record<Card['propertyType'], string> = {
 export default function PropertyCard({ property }: { property: Card }) {
   const primary = property.images[0]?.imageUrl;
   const perMonth = property.listingType === 'rent';
+  const fresh = getFreshness(property.lastConfirmedAt);
 
   return (
     <Link
@@ -96,6 +98,16 @@ export default function PropertyCard({ property }: { property: Card }) {
             <Maximize size={15} /> {formatArea(property.areaValue, property.areaUnit)}
           </span>
         </div>
+
+        {/* Freshness — anti-stale trust signal */}
+        <p
+          className={`mt-2 flex items-center gap-1 text-xs ${
+            fresh.stale ? 'text-cta' : 'text-ink-muted'
+          }`}
+        >
+          {fresh.stale ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} />}
+          {fresh.label}
+        </p>
       </div>
     </Link>
   );

@@ -43,6 +43,7 @@ export const cardSelect = {
   lat: true,
   lng: true,
   createdAt: true,
+  lastConfirmedAt: true,
   images: {
     where: { isPrimary: true },
     take: 1,
@@ -86,6 +87,9 @@ export async function searchProperties(query: SearchQuery) {
 
   if (query.bedrooms != null) where.bedrooms = { gte: query.bedrooms };
   if (query.bathrooms != null) where.bathrooms = { gte: query.bathrooms };
+
+  // Trust filter: verified-documents listings only.
+  if (query.verifiedOnly) where.isDocumentVerified = true;
 
   // Area filter — convert the requested min/max into sqft to match areaSqft.
   if (query.minArea != null || query.maxArea != null) {
@@ -325,7 +329,16 @@ export async function renewListing(id: string, userId: string, role: string) {
   expiresAt.setDate(expiresAt.getDate() + LISTING_DURATION_DAYS);
   return prisma.property.update({
     where: { id },
-    data: { status: 'active', expiresAt },
+    data: { status: 'active', expiresAt, lastConfirmedAt: new Date() },
+  });
+}
+
+/** Dealer confirms the listing is still available (freshness / anti-stale). */
+export async function confirmAvailability(id: string, userId: string, role: string) {
+  await assertOwnership(id, userId, role);
+  return prisma.property.update({
+    where: { id },
+    data: { lastConfirmedAt: new Date() },
   });
 }
 
