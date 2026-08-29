@@ -6,6 +6,7 @@
  * Full validation lives on the server; here we do light client checks for UX.
  */
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { useUiStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
@@ -16,6 +17,7 @@ import Button from '../ui/Button';
 import { LogoMark } from '../ui/Logo';
 
 export default function AuthModal() {
+  const { t } = useTranslation();
   const { authModal, closeAuth, openAuth } = useUiStore();
   const setUser = useAuthStore((s) => s.setUser);
   const isLogin = authModal.mode === 'login';
@@ -73,7 +75,7 @@ export default function AuthModal() {
           <div className="flex items-center gap-2">
             <LogoMark size={26} />
             <h2 className="font-heading text-xl font-semibold text-ink">
-              {isLogin ? 'Welcome back' : 'Create your account'}
+              {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
             </h2>
           </div>
           <button onClick={closeAuth} aria-label="Close" className="text-ink-muted hover:text-ink">
@@ -89,10 +91,10 @@ export default function AuthModal() {
 
         <form onSubmit={submit} className="space-y-3">
           {!isLogin && (
-            <Input label="Full name" name="name" value={form.name} onChange={set('name')} required />
+            <Input label={t('auth.fullName')} name="name" value={form.name} onChange={set('name')} required />
           )}
           <Input
-            label="Email"
+            label={t('auth.email')}
             name="email"
             type="email"
             value={form.email}
@@ -100,7 +102,7 @@ export default function AuthModal() {
             required
           />
           <Input
-            label="Password"
+            label={t('auth.password')}
             name="password"
             type="password"
             value={form.password}
@@ -111,19 +113,19 @@ export default function AuthModal() {
           {!isLogin && (
             <>
               <div>
-                <label className="mb-1 block text-sm font-medium text-ink">I want to</label>
+                <label className="mb-1 block text-sm font-medium text-ink">{t('auth.iWantTo')}</label>
                 <select
                   value={form.role}
                   onChange={set('role')}
                   className="w-full rounded-lg border border-hairline bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 >
-                  <option value="buyer">Buy or rent property</option>
-                  <option value="dealer">List as a dealer / agent</option>
-                  <option value="owner">List as an owner</option>
+                  <option value="buyer">{t('auth.roleBuyer')}</option>
+                  <option value="dealer">{t('auth.roleDealer')}</option>
+                  <option value="owner">{t('auth.roleOwner')}</option>
                 </select>
               </div>
               <Input
-                label="Phone (optional)"
+                label={t('auth.phoneOptional')}
                 name="phone"
                 value={form.phone}
                 onChange={set('phone')}
@@ -131,7 +133,7 @@ export default function AuthModal() {
               />
               {needsCnic && (
                 <Input
-                  label="CNIC (for identity verification)"
+                  label={t('auth.cnic')}
                   name="cnicNumber"
                   value={form.cnicNumber}
                   onChange={set('cnicNumber')}
@@ -143,17 +145,17 @@ export default function AuthModal() {
           )}
 
           <Button type="submit" variant="primary" className="w-full" disabled={busy}>
-            {busy ? 'Please wait…' : isLogin ? 'Log in' : 'Create account'}
+            {busy ? t('auth.pleaseWait') : isLogin ? t('auth.login') : t('auth.create')}
           </Button>
         </form>
 
         <p className="mt-4 text-center text-sm text-ink-muted">
-          {isLogin ? "Don't have an account? " : 'Already have an account? '}
+          {isLogin ? t('auth.noAccount') : t('auth.haveAccount')}
           <button
             onClick={() => openAuth(isLogin ? 'register' : 'login')}
             className="font-medium text-primary hover:underline"
           >
-            {isLogin ? 'Sign up' : 'Log in'}
+            {isLogin ? t('auth.signup') : t('auth.login')}
           </button>
         </p>
       </div>

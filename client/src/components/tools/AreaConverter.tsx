@@ -3,10 +3,12 @@
  * the others (marla, kanal, sq ft, sq yd, sq m, acre).
  */
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Input from '../ui/Input';
 import { convertArea, UNIT_LABELS, tidy } from '../../utils/units';
 
 export default function AreaConverter() {
+  const { t } = useTranslation();
   const [value, setValue] = useState('1');
   const [unit, setUnit] = useState('marla');
 
@@ -15,9 +17,9 @@ export default function AreaConverter() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div className="space-y-3">
-        <Input label="Value" type="number" value={value} onChange={(e) => setValue(e.target.value)} />
+        <Input label={t('tools.value')} type="number" value={value} onChange={(e) => setValue(e.target.value)} />
         <div>
-          <label className="mb-1 block text-sm font-medium text-ink">Unit</label>
+          <label className="mb-1 block text-sm font-medium text-ink">{t('tools.unit')}</label>
           <select
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
@@ -34,7 +36,7 @@ export default function AreaConverter() {
 
       <div className="rounded-card border border-hairline bg-canvas p-5">
         <p className="mb-2 text-sm text-ink-muted">
-          {value || 0} {UNIT_LABELS[unit]} equals
+          {t('tools.equals', { value: value || 0, unit: UNIT_LABELS[unit] })}
         </p>
         <dl className="space-y-2 text-sm">
           {Object.entries(results)

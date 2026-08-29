@@ -4,11 +4,13 @@
  * EMI at ~40% of income (adjustable).
  */
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Input from '../ui/Input';
 import { maxAffordableLoan } from '../../utils/finance';
 import { formatPricePKRLabeled } from '../../utils/formatPrice';
 
 export default function AffordabilityCalculator() {
+  const { t } = useTranslation();
   const [income, setIncome] = useState('');
   const [obligations, setObligations] = useState('0');
   const [rate, setRate] = useState('22');
@@ -28,30 +30,28 @@ export default function AffordabilityCalculator() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div className="space-y-3">
-        <Input label="Monthly income (PKR)" type="number" value={income} onChange={(e) => setIncome(e.target.value)} placeholder="e.g. 350000" />
-        <Input label="Existing monthly payments (PKR)" type="number" value={obligations} onChange={(e) => setObligations(e.target.value)} />
-        <Input label="Down payment you have (%)" type="number" value={downPct} onChange={(e) => setDownPct(e.target.value)} />
-        <Input label="Interest rate (% per year)" type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
-        <Input label="Tenure (years)" type="number" value={years} onChange={(e) => setYears(e.target.value)} />
+        <Input label={t('tools.monthlyIncome')} type="number" value={income} onChange={(e) => setIncome(e.target.value)} placeholder="e.g. 350000" />
+        <Input label={t('tools.existingPayments')} type="number" value={obligations} onChange={(e) => setObligations(e.target.value)} />
+        <Input label={t('tools.downYouHave')} type="number" value={downPct} onChange={(e) => setDownPct(e.target.value)} />
+        <Input label={t('tools.interestRate')} type="number" value={rate} onChange={(e) => setRate(e.target.value)} />
+        <Input label={t('tools.tenure')} type="number" value={years} onChange={(e) => setYears(e.target.value)} />
       </div>
 
       <div className="rounded-card border border-hairline bg-canvas p-5">
         {valid ? (
           <>
-            <p className="text-sm text-ink-muted">You can likely afford a property up to</p>
+            <p className="text-sm text-ink-muted">{t('tools.affordUpTo')}</p>
             <p className="mt-1 font-heading text-3xl font-semibold text-primary">
               {formatPricePKRLabeled(result.price)}
             </p>
             <dl className="mt-4 space-y-2 text-sm">
-              <Row label="Max loan you qualify for" value={formatPricePKRLabeled(result.loan)} />
-              <Row label="Assumed EMI cap" value="40% of income" />
+              <Row label={t('tools.maxLoan')} value={formatPricePKRLabeled(result.loan)} />
+              <Row label={t('tools.emiCap')} value={t('tools.emiCapVal')} />
             </dl>
-            <p className="mt-4 text-xs text-ink-muted">
-              A rough guide — banks assess many factors. Use it to narrow your search budget.
-            </p>
+            <p className="mt-4 text-xs text-ink-muted">{t('tools.affordNote')}</p>
           </>
         ) : (
-          <p className="text-ink-muted">Enter your monthly income to see your budget.</p>
+          <p className="text-ink-muted">{t('tools.enterIncome')}</p>
         )}
       </div>
     </div>

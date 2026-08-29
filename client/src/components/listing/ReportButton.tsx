@@ -3,6 +3,7 @@
  * listings go to the admin moderation queue (Section 5). Requires login.
  */
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Flag, X } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useUiStore } from '../../store/uiStore';
@@ -10,6 +11,7 @@ import { reportProperty } from '../../services/propertyService';
 import { apiErrorMessage } from '../../lib/api';
 
 export default function ReportButton({ propertyId }: { propertyId: string }) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const openAuth = useUiStore((s) => s.openAuth);
   const [open, setOpen] = useState(false);
@@ -41,28 +43,24 @@ export default function ReportButton({ propertyId }: { propertyId: string }) {
         onClick={trigger}
         className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted hover:text-cta"
       >
-        <Flag size={15} /> Report this listing
+        <Flag size={15} /> {t('report.button')}
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setOpen(false)}>
           <div className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-heading text-lg font-semibold text-ink">Report listing</h3>
+              <h3 className="font-heading text-lg font-semibold text-ink">{t('report.title')}</h3>
               <button onClick={() => setOpen(false)} aria-label="Close" className="text-ink-muted hover:text-ink">
                 <X size={20} />
               </button>
             </div>
 
             {state === 'done' ? (
-              <p className="text-sm text-ink">
-                Thanks — our moderation team will review this listing. You can close this window.
-              </p>
+              <p className="text-sm text-ink">{t('report.done')}</p>
             ) : (
               <form onSubmit={submit}>
-                <p className="mb-2 text-sm text-ink-muted">
-                  Tell us what's wrong (fake listing, wrong price, already sold, scam, etc.).
-                </p>
+                <p className="mb-2 text-sm text-ink-muted">{t('report.prompt')}</p>
                 {error && <p className="mb-2 text-sm text-cta">{error}</p>}
                 <textarea
                   value={reason}
@@ -71,14 +69,14 @@ export default function ReportButton({ propertyId }: { propertyId: string }) {
                   required
                   minLength={5}
                   className="w-full rounded-lg border border-hairline bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  placeholder="Describe the problem…"
+                  placeholder={t('report.placeholder')}
                 />
                 <button
                   type="submit"
                   disabled={state === 'busy'}
                   className="mt-3 w-full rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-light disabled:opacity-60"
                 >
-                  {state === 'busy' ? 'Submitting…' : 'Submit report'}
+                  {state === 'busy' ? t('report.submitting') : t('report.submit')}
                 </button>
               </form>
             )}

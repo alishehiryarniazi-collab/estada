@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { PropertyCardSkeleton } from '../components/ui/Skeleton';
@@ -13,6 +14,7 @@ import { formatPricePKRLabeled, formatArea } from '../utils/formatPrice';
 import type { PropertyDetail } from '../types/property';
 
 export default function SharedShortlistPage() {
+  const { t } = useTranslation();
   const [params] = useSearchParams();
   const [items, setItems] = useState<PropertyDetail[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,8 +34,8 @@ export default function SharedShortlistPage() {
     <div className="flex min-h-screen flex-col bg-canvas">
       <Navbar />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
-        <h1 className="font-heading text-2xl font-semibold text-ink">A shared shortlist</h1>
-        <p className="mt-1 text-sm text-ink-muted">Listings someone wanted you to see.</p>
+        <h1 className="font-heading text-2xl font-semibold text-ink">{t('short.sharedTitle')}</h1>
+        <p className="mt-1 text-sm text-ink-muted">{t('short.sharedSubtitle')}</p>
 
         <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {loading
@@ -63,7 +65,7 @@ export default function SharedShortlistPage() {
         </div>
 
         {!loading && items.length === 0 && (
-          <p className="mt-6 text-ink-muted">This shared shortlist is empty or the links have expired.</p>
+          <p className="mt-6 text-ink-muted">{t('short.sharedEmpty')}</p>
         )}
       </main>
       <Footer />

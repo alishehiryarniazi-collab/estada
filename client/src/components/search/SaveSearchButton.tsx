@@ -3,12 +3,14 @@
  * (email digest wiring lands in M5). Prompts login if needed.
  */
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BellPlus, Check } from 'lucide-react';
 import { createSavedSearch } from '../../services/savedService';
 import { useAuthStore } from '../../store/authStore';
 import { useUiStore } from '../../store/uiStore';
 
 export default function SaveSearchButton({ params }: { params: Record<string, string> }) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const openAuth = useUiStore((s) => s.openAuth);
   const [saved, setSaved] = useState(false);
@@ -35,7 +37,7 @@ export default function SaveSearchButton({ params }: { params: Record<string, st
       className="inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-white px-3 py-1.5 text-sm font-medium text-ink hover:bg-canvas disabled:opacity-60"
     >
       {saved ? <Check size={15} className="text-verify" /> : <BellPlus size={15} />}
-      {saved ? 'Saved' : 'Save search'}
+      {saved ? t('search.saved') : t('search.saveSearch')}
     </button>
   );
 }

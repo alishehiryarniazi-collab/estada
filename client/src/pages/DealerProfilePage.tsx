@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BadgeCheck, Building2, Clock } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -15,6 +16,7 @@ import { apiErrorMessage } from '../lib/api';
 
 export default function DealerProfilePage() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
   const [data, setData] = useState<DealerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,9 +37,9 @@ export default function DealerProfilePage() {
       <Navbar />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
         {loading ? (
-          <p className="text-ink-muted">Loading…</p>
+          <p className="text-ink-muted">{t('common.loading')}</p>
         ) : error || !dealer ? (
-          <p className="text-ink-muted">{error || 'Dealer not found.'}</p>
+          <p className="text-ink-muted">{error || t('dealer.notFound')}</p>
         ) : (
           <>
             {/* Header */}
@@ -65,17 +67,17 @@ export default function DealerProfilePage() {
                   )}
                   {data.responseLabel && (
                     <span className="flex items-center gap-1">
-                      <Clock size={14} /> {data.responseLabel}
+                      <Clock size={14} /> {t(data.responseLabel)}
                     </span>
                   )}
-                  <span>Member since {new Date(dealer.createdAt).getFullYear()}</span>
+                  <span>{t('dealer.memberSince', { year: new Date(dealer.createdAt).getFullYear() })}</span>
                 </div>
               </div>
             </div>
 
             {/* Listings */}
             <h2 className="mb-3 mt-8 font-heading text-lg font-semibold text-ink">
-              Listings ({data.listings.length})
+              {t('dealer.listings', { n: data.listings.length })}
             </h2>
             {loading ? (
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -84,7 +86,7 @@ export default function DealerProfilePage() {
                 ))}
               </div>
             ) : data.listings.length === 0 ? (
-              <p className="text-ink-muted">No active listings right now.</p>
+              <p className="text-ink-muted">{t('dealer.noListings')}</p>
             ) : (
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                 {data.listings.map((p) => (

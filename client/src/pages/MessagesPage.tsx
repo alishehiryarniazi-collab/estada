@@ -4,6 +4,7 @@
  * numbers stay hidden until BOTH sides tap "Share my number".
  */
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Send, Phone, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { getSocket } from '../lib/socket';
@@ -14,6 +15,7 @@ import { useAuthStore } from '../store/authStore';
 import { useUiStore } from '../store/uiStore';
 
 export default function MessagesPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const openAuth = useUiStore((s) => s.openAuth);
 
@@ -91,9 +93,9 @@ export default function MessagesPage() {
       <div className="flex min-h-screen flex-col bg-canvas">
         <Navbar />
         <main className="mx-auto flex max-w-lg flex-1 flex-col items-center justify-center px-6 text-center">
-          <p className="text-ink">Log in to see your messages.</p>
+          <p className="text-ink">{t('msg.loginPrompt')}</p>
           <button onClick={() => openAuth('login')} className="mt-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white">
-            Log in
+            {t('nav.login')}
           </button>
         </main>
       </div>
@@ -108,9 +110,9 @@ export default function MessagesPage() {
       <div className="mx-auto flex w-full max-w-6xl flex-1 overflow-hidden px-0 sm:px-6 sm:py-4">
         {/* Thread list */}
         <aside className={`${selected ? 'hidden' : 'block'} w-full border-r border-hairline bg-surface sm:block sm:w-80`}>
-          <h1 className="border-b border-hairline p-4 font-heading text-lg font-semibold text-ink">Messages</h1>
+          <h1 className="border-b border-hairline p-4 font-heading text-lg font-semibold text-ink">{t('msg.title')}</h1>
           {threads.length === 0 ? (
-            <p className="p-4 text-sm text-ink-muted">No conversations yet. Enquire on a listing to start one.</p>
+            <p className="p-4 text-sm text-ink-muted">{t('msg.noConversations')}</p>
           ) : (
             <ul className="divide-y divide-hairline">
               {threads.map((t) => (
@@ -134,7 +136,7 @@ export default function MessagesPage() {
         {/* Chat window */}
         <section className={`${selected ? 'flex' : 'hidden'} min-w-0 flex-1 flex-col bg-canvas sm:flex`}>
           {!selected ? (
-            <div className="flex flex-1 items-center justify-center text-ink-muted">Select a conversation</div>
+            <div className="flex flex-1 items-center justify-center text-ink-muted">{t('msg.select')}</div>
           ) : (
             <>
               {/* Header */}
@@ -156,7 +158,7 @@ export default function MessagesPage() {
                     disabled={!!mySideShared}
                     className="flex items-center gap-1 rounded-lg border border-hairline px-3 py-1.5 text-sm font-medium text-ink hover:bg-canvas disabled:opacity-60"
                   >
-                    <Phone size={14} /> {mySideShared ? 'Waiting…' : 'Share number'}
+                    <Phone size={14} /> {mySideShared ? t('msg.waiting') : t('msg.shareNumber')}
                   </button>
                 )}
               </div>
@@ -185,7 +187,7 @@ export default function MessagesPage() {
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Type a message…"
+                  placeholder={t('msg.typeMessage')}
                   className="flex-1 rounded-full border border-hairline bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-primary"
                 />
                 <button type="submit" className="grid h-11 w-11 place-items-center rounded-full bg-cta text-white hover:bg-cta-hover" aria-label="Send">

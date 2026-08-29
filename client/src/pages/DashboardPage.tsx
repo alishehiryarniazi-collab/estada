@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Plus, Eye, Heart, MessageSquare, Trash2, Search } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -21,6 +22,7 @@ import { useUiStore } from '../store/uiStore';
 const STATUS = ['active', 'under_offer', 'sold', 'expired'];
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const openAuth = useUiStore((s) => s.openAuth);
   const navigate = useNavigate();
@@ -75,7 +77,7 @@ export default function DashboardPage() {
     if (!file) return;
     try {
       await uploadDocument(id, file);
-      setDocMsg('Document uploaded — an admin will review it shortly.');
+      setDocMsg(t('dash.docUploaded'));
       setTimeout(() => setDocMsg(null), 4000);
     } catch (e) {
       setDocMsg(apiErrorMessage(e));
@@ -87,9 +89,9 @@ export default function DashboardPage() {
       <div className="flex min-h-screen flex-col bg-canvas">
         <Navbar />
         <main className="mx-auto flex max-w-lg flex-1 flex-col items-center justify-center px-6 text-center">
-          <p className="text-ink">Log in to see your dashboard.</p>
+          <p className="text-ink">{t('dash.loginPrompt')}</p>
           <button onClick={() => openAuth('login')} className="mt-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white">
-            Log in
+            {t('nav.login')}
           </button>
         </main>
         <Footer />
@@ -103,12 +105,12 @@ export default function DashboardPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-heading text-2xl font-semibold text-ink">Dashboard</h1>
-            <p className="text-sm text-ink-muted">Welcome back, {user.name.split(' ')[0]}.</p>
+            <h1 className="font-heading text-2xl font-semibold text-ink">{t('dash.title')}</h1>
+            <p className="text-sm text-ink-muted">{t('dash.welcome', { name: user.name.split(' ')[0] })}</p>
           </div>
           {isDealer && (
             <Link to="/post-listing" className="inline-flex items-center gap-1.5 rounded-lg bg-cta px-4 py-2.5 text-sm font-medium text-white hover:bg-cta-hover">
-              <Plus size={16} /> Post a listing
+              <Plus size={16} /> {t('dash.postListing')}
             </Link>
           )}
         </div>
@@ -121,12 +123,12 @@ export default function DashboardPage() {
         {/* Listings (dealers/owners) */}
         {isDealer && (
           <section className="mt-8">
-            <h2 className="mb-3 font-heading text-lg font-semibold text-ink">My listings</h2>
+            <h2 className="mb-3 font-heading text-lg font-semibold text-ink">{t('dash.myListings')}</h2>
             {loading ? (
-              <p className="text-ink-muted">Loading…</p>
+              <p className="text-ink-muted">{t('dash.loading')}</p>
             ) : listings.length === 0 ? (
               <div className="rounded-card border border-hairline bg-surface p-8 text-center text-ink-muted">
-                No listings yet. Post your first one!
+                {t('dash.noListings')}
               </div>
             ) : (
               <div className="space-y-3">
@@ -140,7 +142,7 @@ export default function DashboardPage() {
                         <Link to={`/listings/${l.id}`} className="line-clamp-1 font-medium text-ink hover:text-primary">
                           {l.title}
                         </Link>
-                        {l.isDraft && <Badge tone="featured">Draft</Badge>}
+                        {l.isDraft && <Badge tone="featured">{t('dash.draft')}</Badge>}
                       </div>
                       <p className="text-sm text-primary">{formatPricePKRLabeled(l.price)}</p>
                       <div className="mt-1 flex gap-4 text-xs text-ink-muted">
@@ -157,7 +159,7 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2">
                       {l.isDraft ? (
                         <button onClick={() => publishDraft(l.id)} className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white">
-                          Publish
+                          {t('dash.publish')}
                         </button>
                       ) : (
                         <select
@@ -167,31 +169,38 @@ export default function DashboardPage() {
                         >
                           {STATUS.map((s) => (
                             <option key={s} value={s}>
-                              {s.replace('_', ' ')}
+                              {t(
+                                s === 'active'
+                                  ? 'spec.stAvailable'
+                                  : s === 'under_offer'
+                                    ? 'spec.stUnderOffer'
+                                    : s === 'sold'
+                                      ? 'spec.stSold'
+                                      : 'spec.stExpired',
+                              )}
                             </option>
                           ))}
                         </select>
                       )}
                       {l.status === 'expired' && (
                         <button onClick={() => renew(l.id)} className="rounded-lg bg-verify px-3 py-1.5 text-xs font-medium text-white">
-                          Renew
+                          {t('dash.renew')}
                         </button>
                       )}
                       {!l.isDraft && l.status === 'active' && (
                         <button
                           onClick={() => confirmAvail(l.id)}
                           className="rounded-lg border border-verify px-3 py-1.5 text-xs font-medium text-verify hover:bg-verify-light"
-                          title="Confirm this listing is still available"
                         >
-                          Confirm available
+                          {t('dash.confirmAvailable')}
                         </button>
                       )}
                       <label className="cursor-pointer rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink hover:bg-canvas" title="Upload ownership document for verification">
                         <input type="file" accept="image/*" hidden onChange={(e) => onDoc(l.id, e.target.files?.[0])} />
-                        {l.isDocumentVerified ? 'Verified ✓' : 'Docs'}
+                        {l.isDocumentVerified ? t('dash.verifiedTick') : t('dash.docs')}
                       </label>
                       <button onClick={() => navigate(`/post-listing?edit=${l.id}`)} className="rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink hover:bg-canvas">
-                        Edit
+                        {t('dash.edit')}
                       </button>
                     </div>
                   </div>
@@ -203,10 +212,10 @@ export default function DashboardPage() {
 
         {/* Saved searches (everyone) */}
         <section className="mt-8">
-          <h2 className="mb-3 font-heading text-lg font-semibold text-ink">Saved searches</h2>
+          <h2 className="mb-3 font-heading text-lg font-semibold text-ink">{t('dash.savedSearches')}</h2>
           {searches.length === 0 ? (
             <div className="rounded-card border border-hairline bg-surface p-6 text-center text-ink-muted">
-              No saved searches. Save one from the search page to get alerts.
+              {t('dash.noSavedSearches')}
             </div>
           ) : (
             <div className="space-y-2">
@@ -216,13 +225,13 @@ export default function DashboardPage() {
                   <div key={s.id} className="flex items-center justify-between rounded-lg border border-hairline bg-surface px-4 py-3">
                     <div className="min-w-0">
                       <p className="line-clamp-1 text-sm text-ink">
-                        {Object.entries(s.searchParams).map(([k, v]) => `${k}: ${v}`).join(' · ') || 'All listings'}
+                        {Object.entries(s.searchParams).map(([k, v]) => `${k}: ${v}`).join(' · ') || t('dash.allListings')}
                       </p>
-                      <p className="text-xs text-ink-muted">Alerts: {s.alertFrequency}</p>
+                      <p className="text-xs text-ink-muted">{t('dash.alerts')}: {s.alertFrequency}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Link to={`/search?${qs}`} className="inline-flex items-center gap-1 rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink hover:bg-canvas">
-                        <Search size={13} /> Run
+                        <Search size={13} /> {t('dash.run')}
                       </Link>
                       <button onClick={() => removeSearch(s.id)} className="rounded-lg p-1.5 text-ink-muted hover:text-cta" aria-label="Delete">
                         <Trash2 size={15} />

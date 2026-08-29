@@ -5,6 +5,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Map as MapIcon, List, Loader2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import SearchFilters, { type FilterValues } from '../components/search/SearchFilters';
@@ -17,6 +18,7 @@ import { apiErrorMessage } from '../lib/api';
 import type { PropertyCard as Card } from '../types/property';
 
 export default function SearchPage() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<Card[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -138,7 +140,7 @@ export default function SearchPage() {
       {/* Results header */}
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <p className="text-sm text-ink-muted">
-          {loading ? 'Searching…' : `${items.length}${cursor ? '+' : ''} listings`}
+          {loading ? t('search.searching') : t('search.listings', { n: `${items.length}${cursor ? '+' : ''}` })}
         </p>
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
@@ -151,17 +153,17 @@ export default function SearchPage() {
               onChange={(e) => setSearchAsMove(e.target.checked)}
               className="accent-primary"
             />
-            Search as I move the map
+            {t('search.searchAsMove')}
           </label>
           <select
             value={searchParams.get('sort') || 'newest'}
             onChange={changeSort}
             className="rounded-lg border border-hairline bg-white px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           >
-            <option value="newest">Newest</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="area_desc">Largest area</option>
+            <option value="newest">{t('search.sortNewest')}</option>
+            <option value="price_asc">{t('search.sortPriceAsc')}</option>
+            <option value="price_desc">{t('search.sortPriceDesc')}</option>
+            <option value="area_desc">{t('search.sortAreaDesc')}</option>
           </select>
           {/* Mobile view toggle */}
           <button
@@ -169,7 +171,7 @@ export default function SearchPage() {
             className="inline-flex items-center gap-1.5 rounded-lg border border-hairline px-3 py-1.5 text-sm font-medium text-ink lg:hidden"
           >
             {mobileView === 'list' ? <MapIcon size={15} /> : <List size={15} />}
-            {mobileView === 'list' ? 'Map' : 'List'}
+            {mobileView === 'list' ? t('search.map') : t('search.list')}
           </button>
         </div>
       </div>
@@ -192,7 +194,7 @@ export default function SearchPage() {
             </div>
           ) : items.length === 0 ? (
             <div className="rounded-card border border-hairline bg-surface p-10 text-center text-ink-muted">
-              No listings match your filters. Try widening your search.
+              {t('search.noResults')}
             </div>
           ) : (
             <>

@@ -9,6 +9,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Loader2, Upload, X, Check } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -23,7 +24,7 @@ import { useAuthStore } from '../store/authStore';
 import { useUiStore } from '../store/uiStore';
 
 const DRAFT_KEY = 'estada:listing-draft';
-const STEPS = ['Basics', 'Details', 'Location', 'Photos', 'Review'];
+const STEP_KEYS = ['post.stBasics', 'post.stDetails', 'post.stLocation', 'post.stPhotos', 'post.stReview'];
 
 type Form = {
   title: string;
@@ -53,6 +54,7 @@ const EMPTY: Form = {
 const field = 'w-full rounded-lg border border-hairline bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
 
 export default function PostListingPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const editId = params.get('edit');
@@ -175,9 +177,9 @@ export default function PostListingPage() {
   if (!user) {
     return (
       <Gate>
-        <p className="text-ink">Please log in as a dealer or owner to post a listing.</p>
+        <p className="text-ink">{t('post.gateLogin')}</p>
         <button onClick={() => openAuth('login')} className="mt-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white">
-          Log in
+          {t('nav.login')}
         </button>
       </Gate>
     );
@@ -185,8 +187,8 @@ export default function PostListingPage() {
   if (user.role === 'buyer') {
     return (
       <Gate>
-        <p className="text-ink">You're signed in as a buyer. Only dealers and owners can post listings.</p>
-        <p className="mt-1 text-sm text-ink-muted">Create a dealer/owner account to list a property.</p>
+        <p className="text-ink">{t('post.gateBuyer')}</p>
+        <p className="mt-1 text-sm text-ink-muted">{t('post.gateBuyerNote')}</p>
       </Gate>
     );
   }
@@ -196,12 +198,12 @@ export default function PostListingPage() {
       <Navbar />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6">
         <h1 className="font-heading text-2xl font-semibold text-ink">
-          {editId ? 'Edit listing' : 'Post a listing'}
+          {editId ? t('post.edit') : t('post.title')}
         </h1>
 
         {/* Stepper */}
         <div className="mt-4 flex items-center gap-2">
-          {STEPS.map((s, i) => (
+          {STEP_KEYS.map((s, i) => (
             <div key={s} className="flex flex-1 items-center gap-2">
               <div
                 className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold ${
@@ -210,8 +212,8 @@ export default function PostListingPage() {
               >
                 {i < step ? <Check size={14} /> : i + 1}
               </div>
-              <span className={`hidden text-xs sm:block ${i === step ? 'text-ink' : 'text-ink-muted'}`}>{s}</span>
-              {i < STEPS.length - 1 && <div className="h-px flex-1 bg-hairline" />}
+              <span className={`hidden text-xs sm:block ${i === step ? 'text-ink' : 'text-ink-muted'}`}>{t(s)}</span>
+              {i < STEP_KEYS.length - 1 && <div className="h-px flex-1 bg-hairline" />}
             </div>
           ))}
         </div>
@@ -326,19 +328,19 @@ export default function PostListingPage() {
         {/* Navigation */}
         <div className="mt-5 flex items-center justify-between">
           <button onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0} className="rounded-lg border border-hairline px-4 py-2 text-sm font-medium text-ink disabled:opacity-40">
-            Back
+            {t('post.back')}
           </button>
-          {step < STEPS.length - 1 ? (
+          {step < STEP_KEYS.length - 1 ? (
             <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary-light disabled:opacity-50">
-              Next
+              {t('post.next')}
             </button>
           ) : (
             <div className="flex gap-2">
               <button onClick={() => submit(true)} disabled={saving} className="rounded-lg border border-hairline px-4 py-2 text-sm font-medium text-ink hover:bg-canvas disabled:opacity-50">
-                Save as draft
+                {t('post.saveDraft')}
               </button>
               <button onClick={() => submit(false)} disabled={saving} className="rounded-lg bg-cta px-5 py-2 text-sm font-medium text-white hover:bg-cta-hover disabled:opacity-50">
-                {saving ? 'Saving…' : 'Publish listing'}
+                {saving ? t('post.saving') : t('post.publish')}
               </button>
             </div>
           )}

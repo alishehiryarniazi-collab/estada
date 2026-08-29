@@ -3,6 +3,7 @@
  * logged-in buyers (a dealer can't review themselves).
  */
 import { useEffect, useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getDealerReviews, submitReview, type DealerReview } from '../services/dealerService';
 import { apiErrorMessage } from '../lib/api';
 import { useAuthStore } from '../store/authStore';
@@ -10,6 +11,7 @@ import { useUiStore } from '../store/uiStore';
 import StarRating from './ui/StarRating';
 
 export default function DealerReviews({ dealerId }: { dealerId: string }) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const openAuth = useUiStore((s) => s.openAuth);
   const [reviews, setReviews] = useState<DealerReview[]>([]);
@@ -34,7 +36,7 @@ export default function DealerReviews({ dealerId }: { dealerId: string }) {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!myRating) return setError('Please pick a star rating.');
+    if (!myRating) return setError(t('dealer.pickStars'));
     setBusy(true);
     setError(null);
     try {
@@ -53,7 +55,7 @@ export default function DealerReviews({ dealerId }: { dealerId: string }) {
   return (
     <section className="mt-8">
       <div className="mb-3 flex items-center gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">Reviews</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('dealer.reviews')}</h2>
         {rating.avg != null && (
           <span className="flex items-center gap-1.5 text-sm text-ink-muted">
             <StarRating value={rating.avg} size={15} />
@@ -66,18 +68,18 @@ export default function DealerReviews({ dealerId }: { dealerId: string }) {
       {canReview ? (
         done ? (
           <div className="mb-4 rounded-card border border-verify/30 bg-verify-light p-4 text-sm text-verify">
-            Thanks for your review!
+            {t('dealer.thanks')}
           </div>
         ) : (
           <form onSubmit={submit} className="mb-5 rounded-card border border-hairline bg-surface p-4">
-            <p className="mb-1 text-sm font-medium text-ink">Rate this dealer</p>
+            <p className="mb-1 text-sm font-medium text-ink">{t('dealer.rate')}</p>
             <StarRating value={myRating} onChange={setMyRating} readonly={false} size={24} />
             {error && <p className="mt-2 text-sm text-cta">{error}</p>}
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}
-              placeholder="Share your experience (optional)…"
+              placeholder={t('dealer.shareExp')}
               className="mt-3 w-full rounded-lg border border-hairline bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
             <button
@@ -85,19 +87,19 @@ export default function DealerReviews({ dealerId }: { dealerId: string }) {
               disabled={busy}
               className="mt-3 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary-light disabled:opacity-60"
             >
-              {busy ? 'Submitting…' : 'Submit review'}
+              {busy ? t('dealer.submitting') : t('dealer.submit')}
             </button>
           </form>
         )
       ) : !user ? (
         <button onClick={() => openAuth('login')} className="mb-4 text-sm font-medium text-primary hover:underline">
-          Log in to leave a review
+          {t('dealer.loginReview')}
         </button>
       ) : null}
 
       {/* List */}
       {reviews.length === 0 ? (
-        <p className="text-sm text-ink-muted">No reviews yet.</p>
+        <p className="text-sm text-ink-muted">{t('dealer.noReviews')}</p>
       ) : (
         <ul className="space-y-3">
           {reviews.map((r) => (

@@ -6,6 +6,7 @@
  */
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, LogIn } from 'lucide-react';
 import type { PropertyDetail } from '../../types/property';
 import { useAuthStore } from '../../store/authStore';
@@ -21,6 +22,7 @@ export default function EnquiryForm({
   property: PropertyDetail;
   onEnquired: () => void;
 }) {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const openAuth = useUiStore((s) => s.openAuth);
 
@@ -36,12 +38,12 @@ export default function EnquiryForm({
   if (!user) {
     return (
       <div className="rounded-card border border-hairline bg-surface p-5 text-center">
-        <p className="text-ink">Log in to contact the dealer and view the exact location.</p>
+        <p className="text-ink">{t('enquiry.loginPrompt')}</p>
         <button
           onClick={() => openAuth('login')}
           className="mt-3 inline-flex items-center gap-2 rounded-lg bg-cta px-5 py-2.5 text-sm font-medium text-white hover:bg-cta-hover"
         >
-          <LogIn size={16} /> Log in to enquire
+          <LogIn size={16} /> {t('enquiry.loginBtn')}
         </button>
       </div>
     );
@@ -51,12 +53,10 @@ export default function EnquiryForm({
     return (
       <div className="rounded-card border border-verify/30 bg-verify-light p-5 text-center">
         <CheckCircle2 className="mx-auto text-verify" size={28} />
-        <p className="mt-2 font-medium text-ink">Enquiry sent!</p>
-        <p className="mt-1 text-sm text-ink-muted">
-          The dealer has been notified. You can now see the exact location above.
-        </p>
+        <p className="mt-2 font-medium text-ink">{t('enquiry.sentTitle')}</p>
+        <p className="mt-1 text-sm text-ink-muted">{t('enquiry.sentText')}</p>
         <Link to="/messages" className="mt-3 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-light">
-          Open chat
+          {t('enquiry.openChat')}
         </Link>
       </div>
     );
@@ -83,22 +83,22 @@ export default function EnquiryForm({
 
   return (
     <form onSubmit={submit} className="rounded-card border border-hairline bg-surface p-5">
-      <h3 className="font-heading text-lg font-semibold text-ink">Contact the dealer</h3>
+      <h3 className="font-heading text-lg font-semibold text-ink">{t('enquiry.contactDealer')}</h3>
       {error && <p className="mt-2 rounded-lg bg-cta/5 px-3 py-2 text-sm text-cta">{error}</p>}
 
       <div className="mt-3 space-y-3">
-        <Input label="Name" value={user.name} readOnly />
-        <Input label="Email" value={user.email} readOnly />
+        <Input label={t('enquiry.name')} value={user.name} readOnly />
+        <Input label={t('enquiry.email')} value={user.email} readOnly />
         {!user.phone && (
           <Input
-            label="Phone (optional)"
+            label={t('enquiry.phoneOptional')}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="03001234567"
           />
         )}
         <div>
-          <label className="mb-1 block text-sm font-medium text-ink">Message</label>
+          <label className="mb-1 block text-sm font-medium text-ink">{t('enquiry.message')}</label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -112,11 +112,9 @@ export default function EnquiryForm({
           disabled={busy}
           className="w-full rounded-lg bg-cta px-5 py-2.5 text-sm font-medium text-white hover:bg-cta-hover disabled:opacity-60"
         >
-          {busy ? 'Sending…' : 'Send enquiry'}
+          {busy ? t('enquiry.sending') : t('enquiry.send')}
         </button>
-        <p className="text-center text-xs text-ink-muted">
-          Your phone number stays private until you choose to share it in chat.
-        </p>
+        <p className="text-center text-xs text-ink-muted">{t('enquiry.phonePrivate')}</p>
       </div>
     </form>
   );

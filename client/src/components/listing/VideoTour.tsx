@@ -2,10 +2,12 @@
  * Video tour / virtual walkthrough for a listing. Embeds YouTube/Vimeo or plays
  * a direct video file. Renders nothing if the URL isn't a valid video.
  */
+import { useTranslation } from 'react-i18next';
 import { PlayCircle } from 'lucide-react';
 import { getVideoEmbed } from '../../utils/videoEmbed';
 
 export default function VideoTour({ url }: { url: string | null }) {
+  const { t } = useTranslation();
   if (!url) return null;
   const embed = getVideoEmbed(url);
   if (!embed) return null;
@@ -13,7 +15,7 @@ export default function VideoTour({ url }: { url: string | null }) {
   return (
     <section className="mt-6">
       <h2 className="mb-2 flex items-center gap-2 font-heading text-xl font-semibold text-ink">
-        <PlayCircle size={20} className="text-cta" /> Video tour
+        <PlayCircle size={20} className="text-cta" /> {t('listing.videoTour')}
       </h2>
       <div className="aspect-video w-full overflow-hidden rounded-card border border-hairline bg-black">
         {embed.type === 'iframe' ? (

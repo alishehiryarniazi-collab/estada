@@ -86,8 +86,9 @@ export async function getResponseLabel(dealerId: string): Promise<string | null>
   if (gaps.length < 2) return null;
   const avgHours = gaps.reduce((a, b) => a + b, 0) / gaps.length / 3_600_000;
 
-  if (avgHours <= 2) return 'Usually replies within a couple of hours';
-  if (avgHours <= 8) return 'Usually replies within a few hours';
-  if (avgHours <= 24) return 'Usually replies within a day';
-  return 'Usually replies within a few days';
+  // Return an i18n key; the client translates it (EN/Urdu).
+  if (avgHours <= 2) return 'response.hours2';
+  if (avgHours <= 8) return 'response.hoursFew';
+  if (avgHours <= 24) return 'response.day';
+  return 'response.days';
 }

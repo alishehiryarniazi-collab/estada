@@ -4,6 +4,7 @@
  * Uses the listing's public (approximate) coordinates.
  */
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { School, Stethoscope, ShoppingBag, Landmark } from 'lucide-react';
 
 interface Counts {
@@ -39,6 +40,7 @@ function categorize(elements: { tags?: Record<string, string> }[]): Counts {
 }
 
 export default function NearbyAmenities({ lat, lng }: { lat: number; lng: number }) {
+  const { t } = useTranslation();
   const [counts, setCounts] = useState<Counts | null>(null);
   const [status, setStatus] = useState<'loading' | 'done' | 'error'>('loading');
 
@@ -70,16 +72,16 @@ export default function NearbyAmenities({ lat, lng }: { lat: number; lng: number
   if (status === 'error') return null; // don't clutter if the free API is busy
 
   const items = [
-    { Icon: School, label: 'Schools', n: counts?.schools },
-    { Icon: Stethoscope, label: 'Hospitals', n: counts?.hospitals },
-    { Icon: Landmark, label: 'Mosques', n: counts?.mosques },
-    { Icon: ShoppingBag, label: 'Markets', n: counts?.markets },
+    { Icon: School, label: t('listing.schools'), n: counts?.schools },
+    { Icon: Stethoscope, label: t('listing.hospitals'), n: counts?.hospitals },
+    { Icon: Landmark, label: t('listing.mosques'), n: counts?.mosques },
+    { Icon: ShoppingBag, label: t('listing.markets'), n: counts?.markets },
   ];
 
   return (
     <section className="mt-6">
-      <h2 className="mb-2 font-heading text-xl font-semibold text-ink">What's nearby</h2>
-      <p className="mb-3 text-sm text-ink-muted">Within about 1.5 km of this area.</p>
+      <h2 className="mb-2 font-heading text-xl font-semibold text-ink">{t('listing.whatsNearby')}</h2>
+      <p className="mb-3 text-sm text-ink-muted">{t('listing.nearbyWithin')}</p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {items.map(({ Icon, label, n }) => (
           <div key={label} className="rounded-card border border-hairline bg-surface p-4 text-center">

@@ -4,11 +4,13 @@
  * "coming soon" message instead of a dead link.
  */
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Hammer } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function Placeholder({ title }: { title: string }) {
+  const { t } = useTranslation();
   return (
     <div className="flex min-h-screen flex-col bg-canvas">
       <Navbar />
@@ -17,15 +19,12 @@ export default function Placeholder({ title }: { title: string }) {
           <Hammer size={26} />
         </span>
         <h1 className="mt-5 font-heading text-3xl font-semibold text-ink">{title}</h1>
-        <p className="mt-2 max-w-md text-ink-muted">
-          This part of Estada is being built in an upcoming milestone. The homepage and the
-          listings API are already live.
-        </p>
+        <p className="mt-2 max-w-md text-ink-muted">{t('common.comingSoon')}</p>
         <Link
           to="/"
           className="mt-6 inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-light"
         >
-          Back to home
+          {t('common.backHome')}
         </Link>
       </main>
       <Footer />
