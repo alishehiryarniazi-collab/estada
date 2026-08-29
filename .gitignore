@@ -15,6 +15,9 @@ dist/
 build/
 client/dist/
 server/dist/
+# vite-plugin-pwa dev artifacts
+dev-dist/
+client/dev-dist/
 
 # Prisma
 server/prisma/*.db
