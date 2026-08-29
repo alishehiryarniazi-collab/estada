@@ -200,7 +200,12 @@
     "pleaseWait": "Please wait…",
     "noAccount": "Don't have an account? ",
     "haveAccount": "Already have an account? ",
-    "signup": "Sign up"
+    "signup": "Sign up",
+    "errName": "Please enter your full name (at least 2 letters).",
+    "errEmail": "Please enter a valid email address.",
+    "errPassword": "Password must be at least 8 characters.",
+    "errCnic": "Enter a valid 13-digit CNIC (e.g. 35202-1234567-1).",
+    "errPhone": "Enter a valid Pakistani mobile number (e.g. 03001234567)."
   },
   "tools": {
     "title": "Property tools",

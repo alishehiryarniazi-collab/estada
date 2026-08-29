@@ -10,10 +10,20 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-/** Pull a clean, user-friendly message out of an Axios error. */
+/**
+ * Pull a clean, user-friendly message out of an Axios error.
+ * If the server returned per-field validation errors, surface the first
+ * specific one (e.g. "Password must be at least 8 characters.") instead of the
+ * generic "check the highlighted fields" message.
+ */
 export function apiErrorMessage(err: unknown, fallback = 'Something went wrong. Please try again.'): string {
   if (axios.isAxiosError(err)) {
-    return err.response?.data?.error || fallback;
+    const data = err.response?.data as { error?: string; fields?: Record<string, string[]> } | undefined;
+    if (data?.fields) {
+      const first = Object.values(data.fields).flat().find(Boolean);
+      if (first) return first;
+    }
+    return data?.error || fallback;
   }
   return fallback;
 }

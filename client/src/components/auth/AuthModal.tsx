@@ -38,9 +38,25 @@ export default function AuthModal() {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  // Instant, translated checks so the user sees exactly what to fix.
+  const clientValidate = (): string | null => {
+    if (isLogin) return null;
+    if (form.name.trim().length < 2) return t('auth.errName');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) return t('auth.errEmail');
+    if (form.password.length < 8) return t('auth.errPassword');
+    if (needsCnic && !/^\d{5}-?\d{7}-?\d$/.test(form.cnicNumber.trim())) return t('auth.errCnic');
+    if (form.phone && !/^(?:\+92|0)3\d{9}$/.test(form.phone.replace(/[\s-]/g, ''))) return t('auth.errPhone');
+    return null;
+  };
+
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    const problem = clientValidate();
+    if (problem) {
+      setError(problem);
+      return;
+    }
     setBusy(true);
     try {
       const user = isLogin
