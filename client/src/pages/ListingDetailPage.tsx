@@ -14,6 +14,7 @@ import LocationMap from '../components/listing/LocationMap';
 import EnquiryForm from '../components/listing/EnquiryForm';
 import ReportButton from '../components/listing/ReportButton';
 import PriceInsight from '../components/listing/PriceInsight';
+import ShareButtons from '../components/ShareButtons';
 import Badge from '../components/ui/Badge';
 import HeartButton from '../components/ui/HeartButton';
 import Skeleton from '../components/ui/Skeleton';
@@ -198,7 +199,11 @@ export default function ListingDetailPage() {
               <LocationMap lat={property.lat} lng={property.lng} approximate={property.approximate} />
             </section>
 
-            <div className="mt-6 border-t border-hairline pt-4">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
+              <ShareButtons
+                url={typeof window !== 'undefined' ? window.location.href : ''}
+                title={`${property.title} — ${formatPricePKRLabeled(property.price)}`}
+              />
               <ReportButton propertyId={property.id} />
             </div>
           </div>
