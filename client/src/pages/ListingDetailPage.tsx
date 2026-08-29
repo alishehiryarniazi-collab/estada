@@ -14,6 +14,7 @@ import LocationMap from '../components/listing/LocationMap';
 import EnquiryForm from '../components/listing/EnquiryForm';
 import ReportButton from '../components/listing/ReportButton';
 import PriceInsight from '../components/listing/PriceInsight';
+import NearbyAmenities from '../components/listing/NearbyAmenities';
 import ShareButtons from '../components/ShareButtons';
 import Badge from '../components/ui/Badge';
 import HeartButton from '../components/ui/HeartButton';
@@ -198,6 +199,8 @@ export default function ListingDetailPage() {
               )}
               <LocationMap lat={property.lat} lng={property.lng} approximate={property.approximate} />
             </section>
+
+            <NearbyAmenities lat={property.lat} lng={property.lng} />
 
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
               <ShareButtons

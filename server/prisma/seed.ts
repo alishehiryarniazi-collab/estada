@@ -376,7 +376,7 @@ async function main() {
     },
   });
 
-  await prisma.user.create({
+  const buyer = await prisma.user.create({
     data: {
       name: 'Sara Khan',
       email: 'buyer@estada.app',
@@ -384,6 +384,14 @@ async function main() {
       phone: '03007654321',
       role: 'buyer',
     },
+  });
+
+  // A couple more buyers so the dealer has a few sample reviews.
+  const buyer2 = await prisma.user.create({
+    data: { name: 'Bilal Ahmed', email: 'bilal@example.com', passwordHash: buyerPass, role: 'buyer' },
+  });
+  const buyer3 = await prisma.user.create({
+    data: { name: 'Ayesha Malik', email: 'ayesha@example.com', passwordHash: buyerPass, role: 'buyer' },
   });
 
   // Create listings owned by the demo dealer.
@@ -446,7 +454,16 @@ async function main() {
     await prisma.property.update({ where: { id: ref.id }, data: { price: newPrice } });
   }
 
-  console.info(`✅ Seeded ${LISTINGS.length} listings + 3 demo accounts (2 with price drops).`);
+  // Sample dealer reviews.
+  await prisma.review.createMany({
+    data: [
+      { dealerId: dealer.id, authorId: buyer.id, rating: 5, comment: 'Very responsive and honest. Documents were exactly as listed — smooth deal.' },
+      { dealerId: dealer.id, authorId: buyer2.id, rating: 4, comment: 'Good experience overall, showed the property on time. Slightly firm on price.' },
+      { dealerId: dealer.id, authorId: buyer3.id, rating: 5, comment: 'Helpful and professional, answered all my questions in chat.' },
+    ],
+  });
+
+  console.info(`✅ Seeded ${LISTINGS.length} listings + accounts + 3 reviews (2 price drops).`);
   console.info('   admin@estada.app / Admin@123');
   console.info('   dealer@estada.app / Dealer@123');
   console.info('   buyer@estada.app / Buyer@123');

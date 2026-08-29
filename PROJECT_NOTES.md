@@ -41,7 +41,18 @@ Real estate listing platform for the Pakistani market. Dealers/owners list prope
 
 ## Current state / next step
 🎉 ALL MILESTONES M0–M5 COMPLETE and verified on LIVE MySQL — Phase-1 MVP is fully built. DB `estada` seeded (16 listings, 3 demo accounts). Full feature set working: auth, search + Leaflet map, listing detail w/ privacy, enquiries, reports, shortlist + share, saved searches, multi-step listing form (drafts + image upload + OSM geocode), dealer dashboard + profiles, document verification, admin panel, real-time Socket.IO chat (phone gate), email notifications, auto-expiry. 68 total API smoke-tests green across milestones. Server on :5000, MySQL80 on :3306 (root / 123Khan321. in server/.env, gitignored). Run: server `npm run dev`, client `npm run dev` (port 5176).
-**Possible next work (not yet done):** Phase-2 UI (price-history chart, EMI calculator, comparison tool, CSV bulk upload, featured/boost), automated tests, deployment (free/no-card), map pin clustering, Google OAuth. Ali still to: (1) replace client/public/hero-home.jpg with own photo, (2) delete C:\\mysql-init.txt, (3) optional: free Cloudinary + real SMTP in server/.env.
+### Post-MVP features added (all on GitHub: github.com/alishehiryarniazi-collab/estada)
+Beyond Phase-1, these competitive/trust features were built + verified (each its own commit):
+- **Freshness / "still available"** (lastConfirmedAt + dealer Confirm button) + **Verified-only** search filter
+- **Fair-Price indicator** (median price/sqft comparables → above/fair/below/suspicious) + **price history** (seed has 2 price drops + a DHA Lahore comparables cluster)
+- **Property tools** `/tools`: mortgage/EMI, affordability, area-unit converter (prefill from listing)
+- **WhatsApp/share** buttons + **installable PWA** (vite-plugin-pwa, injectManifest custom SW)
+- **Web push notifications** (VAPID, push_subscriptions table, /api/push; fired on chat/enquiry/saved-search) + navbar bell
+- **English/Urdu i18n** with RTL (react-i18next; homepage + navbar translated; toggle in navbar)
+- **Dealer reviews + ratings** (reviews table, /dealers/:id/reviews, StarRating) + **response-time badge** + **nearby amenities** (OSM Overpass: schools/hospitals/mosques/markets)
+- Seed now: 24 listings, dealer + 3 buyers, 3 reviews. Extra env in server/.env: VAPID_* keys.
+
+**Still not done:** Phase-2 UI (comparison tool, CSV bulk upload, featured/boost), automated tests, deployment (free/no-card), map pin clustering, Google OAuth, full-app Urdu (only home+navbar so far). Ali still to: (1) replace client/public/hero-home.jpg with own photo, (2) delete C:\\mysql-init.txt, (3) optional: free Cloudinary + real SMTP in server/.env. **Build order in progress: A (push+Urdu) ✓ → B (reviews+response+amenities) ✓ → C (video/virtual tours) next → then Ali reviews.**
 
 ## Local run quirk (important)
 The preview/launch tooling ignores `cwd` and `--prefix`, so the dev server was starting from the repo ROOT — which broke Tailwind config resolution AND caused a duplicate-React "Invalid hook call". FINAL FIX: root `.claude/launch.json` "estada-client" entry runs `cmd /c "cd /d estada\client && npm run dev"` so vite runs with cwd=client (like a normal `cd client && npm run dev`). Tailwind/PostCSS/Vite configs still use absolute paths (import.meta.url) + `resolve.dedupe:['react','react-dom']` as belt-and-suspenders. Client dev port = 5176, server = 5000.

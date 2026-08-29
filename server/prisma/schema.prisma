@@ -99,8 +99,28 @@ model User {
   messages          Message[]          @relation("SentMessages")
   reports           Report[]           @relation("ReportedBy")
   pushSubscriptions PushSubscription[]
+  reviewsReceived   Review[]           @relation("DealerReviews")
+  reviewsWritten    Review[]           @relation("AuthoredReviews")
 
   @@map("users")
+}
+
+// Buyer reviews of a dealer (one per buyer per dealer).
+model Review {
+  id        String   @id @default(cuid())
+  dealerId  String   @map("dealer_id")
+  authorId  String   @map("author_id")
+  rating    Int // 1..5
+  comment   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  dealer User @relation("DealerReviews", fields: [dealerId], references: [id], onDelete: Cascade)
+  author User @relation("AuthoredReviews", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([dealerId, authorId])
+  @@index([dealerId])
+  @@map("reviews")
 }
 
 // Browser push subscriptions (Web Push). One user can have several (devices).

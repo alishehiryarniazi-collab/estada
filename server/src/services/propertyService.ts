@@ -15,6 +15,7 @@ import { toSqft } from '../utils/area.js';
 import { approximateLocation } from '../utils/geo.js';
 import { hasEnquired } from './enquiryService.js';
 import { notifyMatchingSavedSearches } from './notifyService.js';
+import { getRatingSummary, getResponseLabel } from './reviewService.js';
 import type {
   CreatePropertyInput,
   UpdatePropertyInput,
@@ -258,13 +259,17 @@ export async function getDealerProfile(dealerId: string) {
   });
   if (!dealer) throw ApiError.notFound('Dealer not found.');
 
-  const listings = await prisma.property.findMany({
-    where: { dealerId, status: 'active', isDraft: false },
-    orderBy: { createdAt: 'desc' },
-    select: cardSelect,
-  });
+  const [listings, rating, responseLabel] = await Promise.all([
+    prisma.property.findMany({
+      where: { dealerId, status: 'active', isDraft: false },
+      orderBy: { createdAt: 'desc' },
+      select: cardSelect,
+    }),
+    getRatingSummary(dealerId),
+    getResponseLabel(dealerId),
+  ]);
 
-  return { dealer, listings: listings.map(publicCard) };
+  return { dealer, listings: listings.map(publicCard), rating, responseLabel };
 }
 
 /** Ensures the property exists and belongs to the requester (or they're admin). */
