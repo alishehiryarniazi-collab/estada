@@ -80,6 +80,7 @@ export interface ListingPayload {
   city: string;
   areaName: string;
   images?: string[];
+  videoUrl?: string;
   isDraft?: boolean;
 }
 

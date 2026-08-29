@@ -26,6 +26,8 @@ export const createPropertySchema = z.object({
   city: safeText(2, 60),
   areaName: safeText(2, 80),
   floorPlanUrl: z.string().url().optional(),
+  // Optional video tour URL (YouTube/Vimeo/direct).
+  videoUrl: z.string().url().max(500).optional().or(z.literal('')),
   // Image URLs from our upload endpoint (Cloudinary https or local /uploads path).
   images: z
     .array(z.string().regex(/^(https?:\/\/|\/uploads\/)/, 'Invalid image URL.'))

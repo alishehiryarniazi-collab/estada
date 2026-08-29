@@ -181,6 +181,8 @@ model Property {
   isDraft            Boolean        @default(false) @map("is_draft")
   isDocumentVerified Boolean        @default(false) @map("is_document_verified")
   floorPlanUrl       String?        @map("floor_plan_url") @db.VarChar(500)
+  // Optional video tour / virtual walkthrough (YouTube, Vimeo or direct video).
+  videoUrl           String?        @map("video_url") @db.VarChar(500)
 
   // Phase-2 analytics counters (structured now, dashboard UI later)
   viewCount    Int @default(0) @map("view_count")

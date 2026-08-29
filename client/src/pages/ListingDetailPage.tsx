@@ -15,6 +15,7 @@ import EnquiryForm from '../components/listing/EnquiryForm';
 import ReportButton from '../components/listing/ReportButton';
 import PriceInsight from '../components/listing/PriceInsight';
 import NearbyAmenities from '../components/listing/NearbyAmenities';
+import VideoTour from '../components/listing/VideoTour';
 import ShareButtons from '../components/ShareButtons';
 import Badge from '../components/ui/Badge';
 import HeartButton from '../components/ui/HeartButton';
@@ -169,6 +170,9 @@ export default function ListingDetailPage() {
                 </button>
               )}
             </section>
+
+            {/* Video tour (if provided) */}
+            <VideoTour url={property.videoUrl} />
 
             {/* Spec table */}
             <section className="mt-6">

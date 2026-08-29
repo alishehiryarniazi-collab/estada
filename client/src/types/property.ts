@@ -26,6 +26,7 @@ export interface PropertyCard {
   status: PropertyStatus;
   isDocumentVerified: boolean;
   isFeatured: boolean;
+  videoUrl: string | null;
   lat: number;
   lng: number;
   createdAt: string;
@@ -72,6 +73,7 @@ export interface PropertyDetail {
   isDocumentVerified: boolean;
   isFeatured: boolean;
   floorPlanUrl: string | null;
+  videoUrl: string | null;
   viewCount: number;
   createdAt: string;
   lastConfirmedAt: string;

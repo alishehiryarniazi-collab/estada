@@ -41,6 +41,7 @@ export const cardSelect = {
   status: true,
   isDocumentVerified: true,
   isFeatured: true,
+  videoUrl: true,
   lat: true,
   lng: true,
   createdAt: true,
@@ -207,6 +208,7 @@ export async function createProperty(dealerId: string, input: CreatePropertyInpu
       city: input.city,
       areaName: input.areaName,
       floorPlanUrl: input.floorPlanUrl,
+      videoUrl: input.videoUrl || null,
       isDraft: input.isDraft ?? false,
       expiresAt,
       images: {

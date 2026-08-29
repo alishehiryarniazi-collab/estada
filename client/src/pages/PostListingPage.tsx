@@ -41,12 +41,13 @@ type Form = {
   lat: number;
   lng: number;
   images: string[];
+  videoUrl: string;
 };
 
 const EMPTY: Form = {
   title: '', description: '', propertyType: 'house', listingType: 'sale',
   price: '', areaValue: '', areaUnit: 'marla', bedrooms: '', bathrooms: '',
-  address: '', city: '', areaName: '', lat: 0, lng: 0, images: [],
+  address: '', city: '', areaName: '', lat: 0, lng: 0, images: [], videoUrl: '',
 };
 
 const field = 'w-full rounded-lg border border-hairline bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
@@ -74,7 +75,7 @@ export default function PostListingPage() {
             listingType: p.listingType, price: String(p.price), areaValue: String(p.areaValue),
             areaUnit: p.areaUnit, bedrooms: p.bedrooms?.toString() || '', bathrooms: p.bathrooms?.toString() || '',
             address: p.address || '', city: p.city, areaName: p.areaName, lat: p.lat, lng: p.lng,
-            images: p.images.map((i) => i.imageUrl),
+            images: p.images.map((i) => i.imageUrl), videoUrl: p.videoUrl || '',
           }),
         )
         .catch(() => setError('Could not load this listing.'));
@@ -140,6 +141,7 @@ export default function PostListingPage() {
     city: form.city,
     areaName: form.areaName,
     images: form.images,
+    videoUrl: form.videoUrl || undefined,
     isDraft,
   });
 
@@ -296,6 +298,15 @@ export default function PostListingPage() {
                 </div>
               )}
               <p className="mt-2 text-xs text-ink-muted">First photo is the cover. Add exterior, rooms, kitchen and bathroom photos for best results.</p>
+
+              <div className="mt-4">
+                <Input
+                  label="Video tour link (optional)"
+                  value={form.videoUrl}
+                  onChange={(e) => set('videoUrl', e.target.value)}
+                  placeholder="YouTube / Vimeo URL — great for overseas buyers"
+                />
+              </div>
             </div>
           )}
 

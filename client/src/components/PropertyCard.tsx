@@ -5,7 +5,7 @@
  */
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BedDouble, Bath, Maximize, MapPin, Home, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { BedDouble, Bath, Maximize, MapPin, Home, CheckCircle2, AlertTriangle, PlayCircle } from 'lucide-react';
 import type { PropertyCard as Card } from '../types/property';
 import { formatPricePKRLabeled, formatArea } from '../utils/formatPrice';
 import { getFreshness } from '../utils/freshness';
@@ -59,6 +59,14 @@ export default function PropertyCard({ property }: { property: Card }) {
         <div className="absolute right-2 top-2">
           <HeartButton propertyId={property.id} />
         </div>
+        {property.videoUrl && (
+          <span
+            className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white"
+            title="Video tour available"
+          >
+            <PlayCircle size={13} /> Video
+          </span>
+        )}
         <div className="absolute bottom-2 left-2 flex gap-1">
           {property.isFeatured && <Badge tone="featured">{t('card.featured')}</Badge>}
           <Badge tone={perMonth ? 'rent' : 'sale'}>

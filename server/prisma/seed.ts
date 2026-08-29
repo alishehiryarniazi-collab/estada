@@ -104,6 +104,7 @@ const LISTINGS: Listing[] = [
     address: 'House 8, Block J, Model Town, Lahore',
   },
   {
+    video: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
     title: 'Luxury Apartment in Clifton with Sea View',
     description:
       'Fully renovated 3-bed apartment on a high floor with an open sea view, imported kitchen, standby generator and covered parking. 24/7 security.',
@@ -423,6 +424,7 @@ async function main() {
         status: 'active',
         isDocumentVerified: !!l.verified,
         isFeatured: !!l.featured,
+        videoUrl: (l as { video?: string }).video ?? null,
         expiresAt,
         images: {
           create: [
