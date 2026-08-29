@@ -207,7 +207,21 @@
     "errEmail": "Please enter a valid email address.",
     "errPassword": "Password must be at least 8 characters.",
     "errCnic": "Enter a valid 13-digit CNIC (e.g. 35202-1234567-1).",
-    "errPhone": "Enter a valid Pakistani mobile number (e.g. 03001234567)."
+    "errPhone": "Enter a valid Pakistani mobile number (e.g. 03001234567).",
+    "forgotLink": "Forgot password?",
+    "forgotTitle": "Reset your password",
+    "forgotBody": "Enter your account email and we'll send you a reset link.",
+    "forgotSend": "Send reset link",
+    "forgotSent": "If an account exists for that email, we've sent a reset link. Please check your inbox.",
+    "backToLogin": "Back to log in",
+    "resetTitle": "Choose a new password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "resetSubmit": "Update password",
+    "resetDone": "Password updated! You can now log in with your new password.",
+    "resetMismatch": "Passwords do not match.",
+    "resetInvalid": "This reset link is invalid or has expired. Please request a new one from \"Forgot password?\".",
+    "goToLogin": "Go to log in"
   },
   "tools": {
     "title": "Property tools",

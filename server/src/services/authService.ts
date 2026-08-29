@@ -2,11 +2,17 @@
  * Auth business logic: registration and login.
  * Controllers stay thin; all DB work + rules live here.
  */
+import crypto from 'node:crypto';
 import type { User } from '@prisma/client';
 import { prisma } from '../config/prisma.js';
 import { hashPassword, verifyPassword } from '../utils/password.js';
 import { ApiError } from '../utils/ApiError.js';
+import { sendMail } from './mailService.js';
+import { env } from '../config/env.js';
 import type { RegisterInput, LoginInput } from '../validators/auth.js';
+
+const RESET_TTL_MIN = 60; // reset link valid for 1 hour
+const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex');
 
 /** Shape safe to send to the client — never leaks the password hash. */
 export function toPublicUser(user: User) {
@@ -60,4 +66,46 @@ export async function loginUser(input: LoginInput) {
   if (!ok) throw invalid;
 
   return toPublicUser(user);
+}
+
+/**
+ * Start a password reset. We ALWAYS return quietly (never reveal whether an
+ * email exists). If it does, we store a hashed token + expiry and email a link.
+ */
+export async function requestPasswordReset(email: string) {
+  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  if (!user) return; // silent — no account enumeration
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + RESET_TTL_MIN * 60_000);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { resetTokenHash: sha256(rawToken), resetTokenExpiresAt: expires },
+  });
+
+  const origin = env.CLIENT_URL.split(',')[0].trim();
+  const link = `${origin}/reset-password?token=${rawToken}`;
+  const body = `
+    <p>Hi ${user.name.split(' ')[0]},</p>
+    <p>We received a request to reset your Estada password. Click below to choose a new one — this link expires in ${RESET_TTL_MIN} minutes.</p>
+    <p><a href="${link}" style="display:inline-block;background:#0F2A47;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none">Reset my password</a></p>
+    <p style="font-size:12px;color:#6B6B66">If you didn't request this, you can safely ignore this email — your password won't change.</p>`;
+  sendMail(user.email, 'Reset your Estada password', 'Password reset', body);
+}
+
+/** Complete a reset with the emailed token + a new password. */
+export async function resetPassword(token: string, newPassword: string) {
+  const user = await prisma.user.findFirst({
+    where: { resetTokenHash: sha256(token), resetTokenExpiresAt: { gt: new Date() } },
+  });
+  if (!user) throw ApiError.badRequest('This reset link is invalid or has expired. Please request a new one.');
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash: await hashPassword(newPassword),
+      resetTokenHash: null,
+      resetTokenExpiresAt: null,
+    },
+  });
 }

@@ -5,9 +5,11 @@
  */
 import { create } from 'zustand';
 
+type AuthMode = 'login' | 'register' | 'forgot';
+
 interface UiState {
-  authModal: { open: boolean; mode: 'login' | 'register' };
-  openAuth: (mode?: 'login' | 'register') => void;
+  authModal: { open: boolean; mode: AuthMode };
+  openAuth: (mode?: AuthMode) => void;
   closeAuth: () => void;
 }
 

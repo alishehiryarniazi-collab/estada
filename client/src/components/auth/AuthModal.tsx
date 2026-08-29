@@ -21,6 +21,7 @@ export default function AuthModal() {
   const { authModal, closeAuth, openAuth } = useUiStore();
   const setUser = useAuthStore((s) => s.setUser);
   const isLogin = authModal.mode === 'login';
+  const isForgot = authModal.mode === 'forgot';
 
   const [form, setForm] = useState({
     name: '',
@@ -32,6 +33,7 @@ export default function AuthModal() {
   });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
 
   if (!authModal.open) return null;
   const needsCnic = !isLogin && form.role !== 'buyer';
@@ -40,7 +42,7 @@ export default function AuthModal() {
 
   // Instant, translated checks so the user sees exactly what to fix.
   const clientValidate = (): string | null => {
-    if (isLogin) return null;
+    if (isLogin || isForgot) return null;
     if (form.name.trim().length < 2) return t('auth.errName');
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) return t('auth.errEmail');
     if (form.password.length < 8) return t('auth.errPassword');
@@ -59,6 +61,11 @@ export default function AuthModal() {
     }
     setBusy(true);
     try {
+      if (isForgot) {
+        await authService.forgotPassword(form.email);
+        setSent(true);
+        return;
+      }
       const user = isLogin
         ? await authService.login(form.email, form.password)
         : await authService.register({
@@ -88,7 +95,7 @@ export default function AuthModal() {
           <div className="flex items-center gap-2">
             <LogoMark size={26} />
             <h2 className="font-heading text-xl font-semibold text-ink">
-              {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
+              {isForgot ? t('auth.forgotTitle') : isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
             </h2>
           </div>
           <button onClick={closeAuth} aria-label="Close" className="text-ink-muted hover:text-ink">
@@ -102,6 +109,47 @@ export default function AuthModal() {
           </div>
         )}
 
+        {isForgot ? (
+          sent ? (
+            <div className="text-center">
+              <p className="rounded-lg border border-verify/30 bg-verify-light px-3 py-3 text-sm text-verify">
+                {t('auth.forgotSent')}
+              </p>
+              <button
+                onClick={() => {
+                  setSent(false);
+                  openAuth('login');
+                }}
+                className="mt-4 text-sm font-medium text-primary hover:underline"
+              >
+                {t('auth.backToLogin')}
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={submit} className="space-y-3">
+              <p className="text-sm text-ink-muted">{t('auth.forgotBody')}</p>
+              <Input
+                label={t('auth.email')}
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={set('email')}
+                required
+              />
+              <Button type="submit" variant="primary" className="w-full" disabled={busy}>
+                {busy ? t('auth.pleaseWait') : t('auth.forgotSend')}
+              </Button>
+              <button
+                type="button"
+                onClick={() => openAuth('login')}
+                className="block w-full text-center text-sm font-medium text-primary hover:underline"
+              >
+                {t('auth.backToLogin')}
+              </button>
+            </form>
+          )
+        ) : (
+        <>
         <form onSubmit={submit} className="space-y-3">
           {!isLogin && (
             <Input label={t('auth.fullName')} name="name" value={form.name} onChange={set('name')} required />
@@ -122,6 +170,15 @@ export default function AuthModal() {
             onChange={set('password')}
             required
           />
+          {isLogin && (
+            <button
+              type="button"
+              onClick={() => openAuth('forgot')}
+              className="block text-sm font-medium text-primary hover:underline"
+            >
+              {t('auth.forgotLink')}
+            </button>
+          )}
 
           {!isLogin && (
             <>
@@ -171,6 +228,8 @@ export default function AuthModal() {
             {isLogin ? t('auth.signup') : t('auth.login')}
           </button>
         </p>
+        </>
+        )}
       </div>
     </div>
   );
