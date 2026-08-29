@@ -29,6 +29,11 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   MAIL_FROM: z.string().default('Estada <no-reply@estada.app>'),
+
+  // Web Push (VAPID) — optional; push is disabled if not set.
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default('mailto:no-reply@estada.app'),
 });
 
 const parsed = envSchema.safeParse(process.env);

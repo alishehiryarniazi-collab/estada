@@ -7,6 +7,7 @@
  */
 import { prisma } from '../config/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
+import { sendToUser } from './pushService.js';
 
 /** Loads an enquiry and verifies the user is a participant (buyer or dealer). */
 export async function loadParticipant(enquiryId: string, userId: string) {
@@ -97,15 +98,25 @@ export async function getMessages(enquiryId: string, userId: string) {
 }
 
 export async function createMessage(enquiryId: string, userId: string, content: string) {
-  await loadParticipant(enquiryId, userId);
+  const { enquiry } = await loadParticipant(enquiryId, userId);
   const text = content.trim();
   if (!text) throw ApiError.badRequest('Message cannot be empty.');
   if (text.length > 2000) throw ApiError.badRequest('Message is too long.');
 
-  return prisma.message.create({
+  const message = await prisma.message.create({
     data: { enquiryId, senderId: userId, content: text },
     select: { id: true, senderId: true, content: true, createdAt: true },
   });
+
+  // Push the other participant (best-effort).
+  const recipientId = userId === enquiry.buyerId ? enquiry.property.dealerId : enquiry.buyerId;
+  sendToUser(recipientId, {
+    title: `New message · ${enquiry.property.title}`,
+    body: text.slice(0, 120),
+    url: '/messages',
+  }).catch(() => undefined);
+
+  return message;
 }
 
 /** Flip the caller's phone-share flag; reveal both numbers once both agree. */

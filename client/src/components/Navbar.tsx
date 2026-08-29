@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Heart, Plus, MessageCircle, ShieldCheck } from 'lucide-react';
 import Logo from './ui/Logo';
+import NotificationBell from './NotificationBell';
 import { useAuthStore } from '../store/authStore';
 import { useUiStore } from '../store/uiStore';
 
@@ -81,6 +82,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
               <ShieldCheck size={16} /> <span className="hidden lg:inline">Admin</span>
             </Link>
           )}
+          <NotificationBell onDark={onDark} />
           {user ? (
             <div className="flex items-center gap-1">
               <Link

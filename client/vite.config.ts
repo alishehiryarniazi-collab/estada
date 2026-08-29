@@ -13,6 +13,9 @@ export default defineConfig({
     // Installable PWA (mobile-first): manifest + auto-updating service worker.
     VitePWA({
       registerType: 'autoUpdate',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       includeAssets: ['favicon.svg'],
       manifest: {
         name: 'Estada — Verified Property in Pakistan',
@@ -27,11 +30,11 @@ export default defineConfig({
           { src: '/favicon.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' },
         ],
       },
-      workbox: {
-        // Don't let the SW intercept API/uploads/socket — those must hit the network.
-        navigateFallbackDenylist: [/^\/api/, /^\/uploads/, /^\/socket\.io/],
+      injectManifest: {
+        // App shell only — never precache API/uploads responses.
+        globPatterns: ['**/*.{js,css,html,svg,woff2}'],
       },
-      devOptions: { enabled: true },
+      devOptions: { enabled: true, type: 'module' },
     }),
   ],
   resolve: {

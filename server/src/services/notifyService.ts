@@ -8,6 +8,7 @@
  */
 import { prisma } from '../config/prisma.js';
 import { sendMail } from './mailService.js';
+import { sendToUser } from './pushService.js';
 import { formatPricePKR } from '../utils/formatPrice.js';
 
 function escapeHtml(s: string): string {
@@ -20,7 +21,7 @@ export async function notifyDealerOfEnquiry(propertyId: string, buyerId: string,
   const [property, buyer] = await Promise.all([
     prisma.property.findUnique({
       where: { id: propertyId },
-      select: { title: true, dealer: { select: { email: true } } },
+      select: { title: true, dealer: { select: { id: true, email: true } } },
     }),
     prisma.user.findUnique({ where: { id: buyerId }, select: { name: true } }),
   ]);
@@ -32,6 +33,11 @@ export async function notifyDealerOfEnquiry(propertyId: string, buyerId: string,
     <p style="background:#fff;border:1px solid #E5E4DE;border-radius:8px;padding:12px">${escapeHtml(message)}</p>
     <p>Open your Estada messages to reply.</p>`;
   sendMail(property.dealer.email, `New enquiry: ${property.title}`, 'You have a new enquiry', body);
+  sendToUser(property.dealer.id, {
+    title: `New enquiry · ${property.title}`,
+    body: `${buyer.name}: ${message.slice(0, 100)}`,
+    url: '/messages',
+  }).catch(() => undefined);
 }
 
 interface MatchableProperty {
@@ -65,7 +71,7 @@ export async function notifyMatchingSavedSearches(propertyId: string) {
   if (!property) return;
 
   const searches = await prisma.savedSearch.findMany({
-    include: { user: { select: { email: true } } },
+    include: { user: { select: { id: true, email: true } } },
   });
 
   const body = `
@@ -77,6 +83,11 @@ export async function notifyMatchingSavedSearches(propertyId: string) {
   for (const s of searches) {
     if (matches(s.searchParams as Record<string, unknown>, property)) {
       sendMail(s.user.email, `New match: ${property.title}`, 'New listing for your saved search', body);
+      sendToUser(s.user.id, {
+        title: 'New listing matches your search',
+        body: `${property.title} — ${property.areaName}, ${property.city}`,
+        url: `/listings/${propertyId}`,
+      }).catch(() => undefined);
     }
   }
 }

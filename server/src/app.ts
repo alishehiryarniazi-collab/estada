@@ -16,6 +16,7 @@ import savedRouter from './routes/savedRoutes.js';
 import uploadRouter from './routes/uploadRoutes.js';
 import dealerRouter from './routes/dealerRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
+import pushRouter from './routes/pushRoutes.js';
 import { LOCAL_UPLOAD_DIR } from './services/uploadService.js';
 
 export function createApp() {
@@ -50,6 +51,7 @@ export function createApp() {
   app.use('/api/uploads', uploadRouter);
   app.use('/api/dealers', dealerRouter);
   app.use('/api/admin', adminRouter);
+  app.use('/api/push', pushRouter);
 
   // Serve locally-stored uploads (dev fallback when Cloudinary isn't configured).
   app.use('/uploads', express.static(LOCAL_UPLOAD_DIR));
