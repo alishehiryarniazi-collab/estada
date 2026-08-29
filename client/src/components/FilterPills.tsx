@@ -1,6 +1,6 @@
 /**
- * Quick-filter pills under the hero — a horizontally scrollable row on mobile.
- * Each pill jumps to the search page pre-filtered.
+ * Quick-filter pills — a horizontally scrollable row. `bare` drops the outer
+ * centered container so it can sit inside the hero (aligned with its content).
  */
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -14,24 +14,25 @@ const PILLS = [
   { key: 'pills.agricultural', to: '/search?propertyType=agricultural', Icon: Trees },
 ];
 
-export default function FilterPills() {
+export default function FilterPills({ bare = false }: { bare?: boolean }) {
   const { t } = useTranslation();
-  return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6">
-      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {PILLS.map(({ key, to, Icon }) => (
-          <Link
-            key={key}
-            to={to}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-hairline
-                       bg-surface px-4 py-2 text-sm font-medium text-ink shadow-card
-                       transition-colors hover:border-primary hover:text-primary"
-          >
-            <Icon size={16} />
-            {t(key)}
-          </Link>
-        ))}
-      </div>
+
+  const row = (
+    <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {PILLS.map(({ key, to, Icon }) => (
+        <Link
+          key={key}
+          to={to}
+          className="inline-flex shrink-0 items-center gap-2 rounded-full border border-hairline
+                     bg-surface px-4 py-2 text-sm font-medium text-ink shadow-card
+                     transition-colors hover:border-primary hover:text-primary"
+        >
+          <Icon size={16} />
+          {t(key)}
+        </Link>
+      ))}
     </div>
   );
+
+  return bare ? row : <div className="mx-auto max-w-7xl px-4 sm:px-6">{row}</div>;
 }

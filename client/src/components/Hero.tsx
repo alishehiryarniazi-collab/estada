@@ -8,6 +8,7 @@
 import { ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SearchBar from './SearchBar';
+import FilterPills from './FilterPills';
 
 export default function Hero() {
   const { t } = useTranslation();
@@ -23,8 +24,8 @@ export default function Hero() {
       {/* Dark gradient overlay for text legibility. */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
 
-      {/* Centred content. */}
-      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-4 sm:px-6">
+      {/* Content spread with equal gaps: tagline → search → quick filters. */}
+      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-evenly px-4 sm:px-6">
         <div className="max-w-2xl">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-verify/90 px-3 py-1 text-xs font-medium text-white">
             <ShieldCheck size={14} /> {t('hero.badge')}
@@ -35,10 +36,13 @@ export default function Hero() {
           <p className="mt-3 max-w-xl text-white/85 sm:text-lg">{t('hero.subtitle')}</p>
         </div>
 
-        {/* Floating search bar — the single most important action. */}
-        <div className="mt-6 max-w-3xl">
+        {/* Floating search bar — the single most important action, centred. */}
+        <div className="max-w-3xl">
           <SearchBar />
         </div>
+
+        {/* Quick filter pills */}
+        <FilterPills bare />
       </div>
     </section>
   );
