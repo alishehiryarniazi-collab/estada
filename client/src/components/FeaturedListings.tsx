@@ -5,6 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react';
 import { searchProperties } from '../services/propertyService';
 import { apiErrorMessage } from '../lib/api';
@@ -13,6 +14,7 @@ import PropertyCard from './PropertyCard';
 import { PropertyCardSkeleton } from './ui/Skeleton';
 
 export default function FeaturedListings() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,16 +34,14 @@ export default function FeaturedListings() {
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <div className="mb-6 flex items-end justify-between">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-ink">Featured listings</h2>
-          <p className="mt-1 text-sm text-ink-muted">
-            Hand-picked homes and investments, many with verified documents.
-          </p>
+          <h2 className="font-heading text-2xl font-semibold text-ink">{t('featured.title')}</h2>
+          <p className="mt-1 text-sm text-ink-muted">{t('featured.subtitle')}</p>
         </div>
         <Link
           to="/search"
           className="hidden items-center gap-1 text-sm font-medium text-primary hover:underline sm:inline-flex"
         >
-          View all <ArrowRight size={16} />
+          {t('featured.viewAll')} <ArrowRight size={16} />
         </Link>
       </div>
 

@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "forSale": "For Sale",
+    "forRent": "For Rent",
+    "plots": "Plots",
+    "commercial": "Commercial",
+    "agricultural": "Agricultural",
+    "saved": "Saved",
+    "messages": "Messages",
+    "admin": "Admin",
+    "login": "Log in",
+    "postListing": "Post Listing",
+    "signOut": "Sign out"
+  },
+  "hero": {
+    "badge": "Verified listings across Pakistan",
+    "title": "Apna ghar dhoondein — verified.",
+    "subtitle": "Search houses, plots, flats and commercial property from trusted dealers. No fake listings, no exact address until you enquire.",
+    "searchPlaceholder": "Search city, area or keyword — e.g. DHA Lahore",
+    "search": "Search",
+    "filters": "Filters"
+  },
+  "pills": {
+    "forSale": "For Sale",
+    "forRent": "For Rent",
+    "plots": "Plots",
+    "commercial": "Commercial",
+    "agricultural": "Agricultural"
+  },
+  "trust": {
+    "docVerified": { "title": "Document verified", "text": "Dealers upload ownership proof; our team reviews before the badge shows." },
+    "privacy": { "title": "Address stays private", "text": "Exact location is hidden until you make an enquiry — no random visitors." },
+    "chat": { "title": "Chat before you share", "text": "Message dealers in-app; phone numbers reveal only when you both agree." },
+    "report": { "title": "Report fraud", "text": "Every listing has a report button that sends it straight to moderation." }
+  },
+  "featured": {
+    "title": "Featured listings",
+    "subtitle": "Hand-picked homes and investments, many with verified documents.",
+    "viewAll": "View all"
+  },
+  "card": {
+    "forSale": "For Sale",
+    "forRent": "For Rent",
+    "verified": "Verified",
+    "featured": "Featured",
+    "perMonth": "/mo"
+  },
+  "footer": {
+    "tagline": "Verified property listings across Pakistan — search, shortlist and contact dealers directly.",
+    "explore": "Explore",
+    "tools": "Tools",
+    "forDealers": "For dealers",
+    "mortgage": "Mortgage calculator",
+    "affordability": "Affordability calculator",
+    "areaConverter": "Area unit converter",
+    "postListing": "Post a listing",
+    "dashboard": "Dealer dashboard",
+    "rights": "Built for the Pakistani property market."
+  }
+}

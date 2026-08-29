@@ -4,6 +4,7 @@
  * specs and location. Hover lifts the card with a subtle shadow.
  */
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BedDouble, Bath, Maximize, MapPin, Home, CheckCircle2, AlertTriangle } from 'lucide-react';
 import type { PropertyCard as Card } from '../types/property';
 import { formatPricePKRLabeled, formatArea } from '../utils/formatPrice';
@@ -20,6 +21,7 @@ const TYPE_LABEL: Record<Card['propertyType'], string> = {
 };
 
 export default function PropertyCard({ property }: { property: Card }) {
+  const { t } = useTranslation();
   const primary = property.images[0]?.imageUrl;
   const perMonth = property.listingType === 'rent';
   const fresh = getFreshness(property.lastConfirmedAt);
@@ -50,7 +52,7 @@ export default function PropertyCard({ property }: { property: Card }) {
         <div className="absolute left-2 top-2 flex gap-1">
           {property.isDocumentVerified && (
             <Badge tone="verified" withIcon>
-              Verified
+              {t('card.verified')}
             </Badge>
           )}
         </div>
@@ -58,8 +60,10 @@ export default function PropertyCard({ property }: { property: Card }) {
           <HeartButton propertyId={property.id} />
         </div>
         <div className="absolute bottom-2 left-2 flex gap-1">
-          {property.isFeatured && <Badge tone="featured">Featured</Badge>}
-          <Badge tone={perMonth ? 'rent' : 'sale'}>{perMonth ? 'For Rent' : 'For Sale'}</Badge>
+          {property.isFeatured && <Badge tone="featured">{t('card.featured')}</Badge>}
+          <Badge tone={perMonth ? 'rent' : 'sale'}>
+            {perMonth ? t('card.forRent') : t('card.forSale')}
+          </Badge>
         </div>
       </div>
 
@@ -68,7 +72,7 @@ export default function PropertyCard({ property }: { property: Card }) {
         <div className="flex items-baseline justify-between gap-2">
           <p className="font-heading text-lg font-semibold text-primary">
             {formatPricePKRLabeled(property.price)}
-            {perMonth && <span className="text-sm font-normal text-ink-muted">/mo</span>}
+            {perMonth && <span className="text-sm font-normal text-ink-muted">{t('card.perMonth')}</span>}
           </p>
           <span className="shrink-0 text-xs text-ink-muted">{TYPE_LABEL[property.propertyType]}</span>
         </div>

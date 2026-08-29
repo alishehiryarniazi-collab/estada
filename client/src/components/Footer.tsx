@@ -3,54 +3,53 @@
  * the page with the brand colour.
  */
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Logo from './ui/Logo';
 
 const GROUPS = [
   {
-    title: 'Explore',
+    titleKey: 'footer.explore',
     links: [
-      { label: 'For Sale', to: '/search?listingType=sale' },
-      { label: 'For Rent', to: '/search?listingType=rent' },
-      { label: 'Plots', to: '/search?propertyType=plot' },
-      { label: 'Commercial', to: '/search?propertyType=commercial' },
+      { labelKey: 'nav.forSale', to: '/search?listingType=sale' },
+      { labelKey: 'nav.forRent', to: '/search?listingType=rent' },
+      { labelKey: 'nav.plots', to: '/search?propertyType=plot' },
+      { labelKey: 'nav.commercial', to: '/search?propertyType=commercial' },
     ],
   },
   {
-    title: 'Tools',
+    titleKey: 'footer.tools',
     links: [
-      { label: 'Mortgage calculator', to: '/tools?tab=mortgage' },
-      { label: 'Affordability calculator', to: '/tools?tab=affordability' },
-      { label: 'Area unit converter', to: '/tools?tab=area' },
+      { labelKey: 'footer.mortgage', to: '/tools?tab=mortgage' },
+      { labelKey: 'footer.affordability', to: '/tools?tab=affordability' },
+      { labelKey: 'footer.areaConverter', to: '/tools?tab=area' },
     ],
   },
   {
-    title: 'For dealers',
+    titleKey: 'footer.forDealers',
     links: [
-      { label: 'Post a listing', to: '/post-listing' },
-      { label: 'Dealer dashboard', to: '/dashboard' },
+      { labelKey: 'footer.postListing', to: '/post-listing' },
+      { labelKey: 'footer.dashboard', to: '/dashboard' },
     ],
   },
 ];
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="bg-primary text-white/80">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="col-span-2 md:col-span-1">
           <Logo variant="white" size={28} />
-          <p className="mt-3 max-w-xs text-sm text-white/70">
-            Verified property listings across Pakistan — search, shortlist and contact dealers
-            directly.
-          </p>
+          <p className="mt-3 max-w-xs text-sm text-white/70">{t('footer.tagline')}</p>
         </div>
         {GROUPS.map((g) => (
-          <div key={g.title}>
-            <h4 className="text-sm font-semibold text-white">{g.title}</h4>
+          <div key={g.titleKey}>
+            <h4 className="text-sm font-semibold text-white">{t(g.titleKey)}</h4>
             <ul className="mt-3 space-y-2">
               {g.links.map((l) => (
-                <li key={l.label}>
+                <li key={l.labelKey}>
                   <Link to={l.to} className="text-sm text-white/70 transition-colors hover:text-white">
-                    {l.label}
+                    {t(l.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -60,7 +59,7 @@ export default function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-5 text-xs text-white/60 sm:px-6">
-          © {new Date().getFullYear()} Estada. Built for the Pakistani property market.
+          © {new Date().getFullYear()} Estada. {t('footer.rights')}
         </div>
       </div>
     </footer>

@@ -8,21 +8,24 @@
  */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Menu, X, Heart, Plus, MessageCircle, ShieldCheck } from 'lucide-react';
 import Logo from './ui/Logo';
 import NotificationBell from './NotificationBell';
+import LanguageToggle from './LanguageToggle';
 import { useAuthStore } from '../store/authStore';
 import { useUiStore } from '../store/uiStore';
 
 const NAV_LINKS = [
-  { label: 'For Sale', to: '/search?listingType=sale' },
-  { label: 'For Rent', to: '/search?listingType=rent' },
-  { label: 'Plots', to: '/search?propertyType=plot' },
-  { label: 'Commercial', to: '/search?propertyType=commercial' },
-  { label: 'Agricultural', to: '/search?propertyType=agricultural' },
+  { key: 'nav.forSale', to: '/search?listingType=sale' },
+  { key: 'nav.forRent', to: '/search?listingType=rent' },
+  { key: 'nav.plots', to: '/search?propertyType=plot' },
+  { key: 'nav.commercial', to: '/search?propertyType=commercial' },
+  { key: 'nav.agricultural', to: '/search?propertyType=agricultural' },
 ];
 
 export default function Navbar({ transparent = false }: { transparent?: boolean }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
@@ -44,12 +47,12 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
         {/* Desktop category links — the primary, prominent navigation */}
         <ul className="hidden items-center gap-5 md:flex lg:gap-7">
           {NAV_LINKS.map((l) => (
-            <li key={l.label}>
+            <li key={l.key}>
               <Link
                 to={l.to}
                 className={`whitespace-nowrap text-[15px] font-semibold tracking-tight transition-colors ${linkColor}`}
               >
-                {l.label}
+                {t(l.key)}
               </Link>
             </li>
           ))}
@@ -62,7 +65,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
             title="Saved"
             className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors ${linkColor}`}
           >
-            <Heart size={16} /> <span className="hidden lg:inline">Saved</span>
+            <Heart size={16} /> <span className="hidden lg:inline">{t('nav.saved')}</span>
           </Link>
           {user && (
             <Link
@@ -70,7 +73,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
               title="Messages"
               className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors ${linkColor}`}
             >
-              <MessageCircle size={16} /> <span className="hidden lg:inline">Messages</span>
+              <MessageCircle size={16} /> <span className="hidden lg:inline">{t('nav.messages')}</span>
             </Link>
           )}
           {user?.role === 'admin' && (
@@ -79,10 +82,11 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
               title="Admin"
               className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors ${linkColor}`}
             >
-              <ShieldCheck size={16} /> <span className="hidden lg:inline">Admin</span>
+              <ShieldCheck size={16} /> <span className="hidden lg:inline">{t('nav.admin')}</span>
             </Link>
           )}
           <NotificationBell onDark={onDark} />
+          <LanguageToggle onDark={onDark} />
           {user ? (
             <div className="flex items-center gap-1">
               <Link
@@ -95,7 +99,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
                 onClick={() => signOut()}
                 className={`rounded-lg px-2 py-2 text-sm font-medium ${linkColor}`}
               >
-                Sign out
+                {t('nav.signOut')}
               </button>
             </div>
           ) : (
@@ -103,7 +107,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
               onClick={() => openAuth('login')}
               className={`rounded-lg px-3 py-2 text-sm font-medium ${linkColor}`}
             >
-              Log in
+              {t('nav.login')}
             </button>
           )}
           <Link
@@ -114,7 +118,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
                 : 'border-primary text-primary hover:bg-primary hover:text-white'
             }`}
           >
-            <Plus size={16} /> Post Listing
+            <Plus size={16} /> {t('nav.postListing')}
           </Link>
         </div>
 
@@ -133,17 +137,20 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
         <div className="mx-4 mb-4 rounded-card border border-hairline bg-surface p-4 shadow-card md:hidden">
           <ul className="space-y-1">
             {NAV_LINKS.map((l) => (
-              <li key={l.label}>
+              <li key={l.key}>
                 <Link
                   to={l.to}
                   onClick={() => setOpen(false)}
                   className="block rounded-md px-3 py-2 text-sm font-medium text-ink hover:bg-canvas"
                 >
-                  {l.label}
+                  {t(l.key)}
                 </Link>
               </li>
             ))}
           </ul>
+          <div className="mt-2 border-t border-hairline pt-2 text-center">
+            <LanguageToggle onDark={false} />
+          </div>
           <div className="mt-3 flex gap-2 border-t border-hairline pt-3">
             {user ? (
               <Link
@@ -161,7 +168,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
                 }}
                 className="flex-1 rounded-lg border border-hairline px-3 py-2 text-center text-sm font-medium text-ink"
               >
-                Log in
+                {t('nav.login')}
               </button>
             )}
             <Link
@@ -169,7 +176,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
               onClick={() => setOpen(false)}
               className="flex-1 rounded-lg border border-primary px-3 py-2 text-center text-sm font-medium text-primary"
             >
-              Post Listing
+              {t('nav.postListing')}
             </Link>
           </div>
         </div>
