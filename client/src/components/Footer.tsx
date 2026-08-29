@@ -16,11 +16,11 @@ const GROUPS = [
     ],
   },
   {
-    title: 'Company',
+    title: 'Tools',
     links: [
-      { label: 'About', to: '/' },
-      { label: 'How verification works', to: '/' },
-      { label: 'Contact', to: '/' },
+      { label: 'Mortgage calculator', to: '/tools?tab=mortgage' },
+      { label: 'Affordability calculator', to: '/tools?tab=affordability' },
+      { label: 'Area unit converter', to: '/tools?tab=area' },
     ],
   },
   {

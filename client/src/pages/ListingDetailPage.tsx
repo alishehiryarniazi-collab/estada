@@ -5,7 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, BedDouble, Bath, Maximize, MapPin, ShieldCheck, BadgeCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, BedDouble, Bath, Maximize, MapPin, ShieldCheck, BadgeCheck, CheckCircle2, AlertTriangle, Calculator } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Gallery from '../components/listing/Gallery';
@@ -122,6 +122,15 @@ export default function ListingDetailPage() {
                 </p>
               );
             })()}
+
+            {!perMonth && (
+              <Link
+                to={`/tools?tab=mortgage&price=${property.price}`}
+                className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              >
+                <Calculator size={14} /> Calculate monthly payment
+              </Link>
+            )}
 
             {/* Key specs */}
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-y border-hairline py-3 text-ink">

@@ -15,6 +15,7 @@ import DashboardPage from './pages/DashboardPage';
 import DealerProfilePage from './pages/DealerProfilePage';
 import MessagesPage from './pages/MessagesPage';
 import AdminPage from './pages/AdminPage';
+import ToolsPage from './pages/ToolsPage';
 import Placeholder from './pages/Placeholder';
 import AuthModal from './components/auth/AuthModal';
 import { useAuthStore } from './store/authStore';
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/shortlist/shared" element={<SharedShortlistPage />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/tools" element={<ToolsPage />} />
         <Route path="*" element={<Placeholder title="Page not found" />} />
       </Routes>
       {/* Global auth modal — can be opened from anywhere via the UI store. */}
