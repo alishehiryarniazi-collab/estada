@@ -7,7 +7,7 @@
  *   makes it live.
  * - Photos are compressed in the browser before upload.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Loader2, Upload, X, Check } from 'lucide-react';
@@ -59,6 +59,7 @@ export default function PostListingPage() {
   const [params] = useSearchParams();
   const editId = params.get('edit');
   const user = useAuthStore((s) => s.user);
+  const loadSession = useAuthStore((s) => s.loadSession);
   const openAuth = useUiStore((s) => s.openAuth);
 
   const [form, setForm] = useState<Form>(EMPTY);
@@ -66,6 +67,7 @@ export default function PostListingPage() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'locating' | 'pinned'>('idle');
 
   // Load: existing listing (edit) or the locally-saved draft (create).
   useEffect(() => {
@@ -103,7 +105,8 @@ export default function PostListingPage() {
 
   const set = (k: keyof Form, v: string | number | string[]) => setForm((f) => ({ ...f, [k]: v }));
 
-  const onLocation = (loc: PickedLocation) =>
+  const onLocation = (loc: PickedLocation) => {
+    setGeoStatus('pinned');
     setForm((f) => ({
       ...f,
       lat: loc.lat,
@@ -111,6 +114,7 @@ export default function PostListingPage() {
       address: loc.address && !f.address ? loc.address.slice(0, 200) : f.address,
       city: loc.city && !f.city ? loc.city : f.city,
     }));
+  };
 
   const onFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -157,6 +161,7 @@ export default function PostListingPage() {
       } else {
         await createListing(buildPayload(isDraft));
         localStorage.removeItem(DRAFT_KEY);
+        await loadSession(); // a buyer becomes an owner — refresh their role
         navigate('/dashboard');
       }
     } catch (err) {
@@ -166,12 +171,62 @@ export default function PostListingPage() {
     }
   };
 
-  const canNext = useMemo(() => {
-    if (step === 0) return form.title.length >= 5 && form.description.length >= 20;
-    if (step === 1) return Number(form.price) > 0 && Number(form.areaValue) > 0;
-    if (step === 2) return form.lat !== 0 && form.city.length >= 2 && form.areaName.length >= 2;
-    return true;
-  }, [step, form]);
+  // What (if anything) is still missing on the current step — shown when the
+  // user taps Next, so they know exactly what to fill.
+  const stepProblem = (): string | null => {
+    if (step === 0 && !(form.title.trim().length >= 5 && form.description.trim().length >= 20)) return t('post.reqBasics');
+    if (step === 1 && !(Number(form.price) > 0 && Number(form.areaValue) > 0)) return t('post.reqDetails');
+    if (step === 2 && !(form.city.trim().length >= 2 && form.areaName.trim().length >= 2)) return t('post.reqLocation');
+    return null;
+  };
+
+  const goNext = () => {
+    const problem = stepProblem();
+    if (problem) {
+      setError(problem);
+      return;
+    }
+    setError(null);
+    setStep((s) => s + 1);
+  };
+
+  // Auto-mark the location on the map from the typed city + area/locality, so
+  // the dealer doesn't have to know they can click the map.
+  useEffect(() => {
+    if (step !== 2 || form.lat !== 0) return;
+    const city = form.city.trim();
+    const area = form.areaName.trim();
+    if (city.length < 2 || area.length < 2) return;
+
+    let active = true;
+    setGeoStatus('locating');
+    const id = setTimeout(async () => {
+      const tryGeocode = async (q: string) => {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&countrycodes=pk&limit=1&q=${encodeURIComponent(q)}`,
+        );
+        const data = await res.json();
+        return data[0] ? { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) } : null;
+      };
+      try {
+        const hit = (await tryGeocode(`${area}, ${city}, Pakistan`)) || (await tryGeocode(`${city}, Pakistan`));
+        if (!active) return;
+        if (hit) {
+          setForm((f) => (f.lat === 0 ? { ...f, lat: hit.lat, lng: hit.lng } : f));
+          setGeoStatus('pinned');
+        } else {
+          setGeoStatus('idle');
+        }
+      } catch {
+        if (active) setGeoStatus('idle');
+      }
+    }, 800);
+
+    return () => {
+      active = false;
+      clearTimeout(id);
+    };
+  }, [step, form.city, form.areaName, form.lat]);
 
   // Access control.
   if (!user) {
@@ -181,14 +236,6 @@ export default function PostListingPage() {
         <button onClick={() => openAuth('login')} className="mt-4 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white">
           {t('nav.login')}
         </button>
-      </Gate>
-    );
-  }
-  if (user.role === 'buyer') {
-    return (
-      <Gate>
-        <p className="text-ink">{t('post.gateBuyer')}</p>
-        <p className="mt-1 text-sm text-ink-muted">{t('post.gateBuyerNote')}</p>
       </Gate>
     );
   }
@@ -270,12 +317,15 @@ export default function PostListingPage() {
 
           {step === 2 && (
             <div className="space-y-4">
-              <LocationPicker lat={form.lat} lng={form.lng} onChange={onLocation} />
-              <Input label={t('post.fAddress')} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder={t('post.phAddress')} />
+              <p className="rounded-lg bg-canvas px-3 py-2 text-sm text-ink-muted">{t('post.locAutoHint')}</p>
               <div className="grid grid-cols-2 gap-3">
                 <Input label={t('post.fCity')} value={form.city} onChange={(e) => set('city', e.target.value)} placeholder="Lahore" />
                 <Input label={t('post.fLocality')} value={form.areaName} onChange={(e) => set('areaName', e.target.value)} placeholder="DHA Phase 5" />
               </div>
+              {geoStatus === 'locating' && <p className="text-sm text-ink-muted">{t('post.locating')}</p>}
+              {geoStatus === 'pinned' && form.lat !== 0 && <p className="text-sm text-verify">{t('post.locPinned')}</p>}
+              <LocationPicker lat={form.lat} lng={form.lng} onChange={onLocation} />
+              <Input label={t('post.fAddress')} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder={t('post.phAddress')} />
             </div>
           )}
 
@@ -331,7 +381,7 @@ export default function PostListingPage() {
             {t('post.back')}
           </button>
           {step < STEP_KEYS.length - 1 ? (
-            <button onClick={() => setStep((s) => s + 1)} disabled={!canNext} className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary-light disabled:opacity-50">
+            <button onClick={goNext} className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary-light">
               {t('post.next')}
             </button>
           ) : (

@@ -7,7 +7,7 @@ import {
   statusSchema,
   searchQuerySchema,
 } from '../validators/property.js';
-import { requireAuth, optionalAuth, requireRole } from '../middleware/auth.js';
+import { requireAuth, optionalAuth } from '../middleware/auth.js';
 import { writeActionLimiter } from '../middleware/rateLimit.js';
 import { createReportSchema } from '../validators/enquiry.js';
 import { reportProperty } from '../controllers/enquiryController.js';
@@ -21,21 +21,16 @@ const router = Router();
 router.get('/', optionalAuth, validate({ query: searchQuerySchema }), asyncHandler(controller.list));
 // The dealer's own listings — MUST be declared before "/:id" so it isn't
 // treated as a property id.
-router.get(
-  '/mine',
-  requireAuth,
-  requireRole('dealer', 'owner', 'admin'),
-  asyncHandler(controller.myListings),
-);
+router.get('/mine', requireAuth, asyncHandler(controller.myListings));
 router.get('/:id', optionalAuth, asyncHandler(controller.detail));
 // Fair-price insight + price history for a listing (public).
 router.get('/:id/price-insight', asyncHandler(controller.priceInsight));
 
-// Listing management — dealers, owners (and admins) only.
+// Any logged-in user can post a listing (a buyer becomes a seller from the same
+// account; createProperty upgrades their role to owner).
 router.post(
   '/',
   requireAuth,
-  requireRole('dealer', 'owner', 'admin'),
   validate({ body: createPropertySchema }),
   asyncHandler(controller.create),
 );
@@ -69,19 +64,14 @@ router.post(
   asyncHandler(reportProperty),
 );
 
-// Ownership documents — dealer uploads (single file), admin reviews later.
+// Ownership documents — the listing owner uploads (single file), admin reviews.
+// Ownership is enforced inside the service, so requireAuth is enough here.
 router.post(
   '/:id/documents',
   requireAuth,
-  requireRole('dealer', 'owner', 'admin'),
   upload.single('document'),
   asyncHandler(uploadDocument),
 );
-router.get(
-  '/:id/documents',
-  requireAuth,
-  requireRole('dealer', 'owner', 'admin'),
-  asyncHandler(listDocuments),
-);
+router.get('/:id/documents', requireAuth, asyncHandler(listDocuments));
 
 export default router;

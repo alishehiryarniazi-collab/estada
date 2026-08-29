@@ -365,7 +365,13 @@
     "locSearchPh": "Search a place, e.g. DHA Phase 5 Lahore",
     "locFind": "Find",
     "locFinding": "Finding…",
-    "locNote": "Search a place or click the map to drop the pin. Buyers only ever see an approximate location."
+    "locNote": "Search a place or click the map to drop the pin. Buyers only ever see an approximate location.",
+    "reqBasics": "Please add a title (5+ characters) and a description (20+ characters) to continue.",
+    "reqDetails": "Please enter a valid price and area to continue.",
+    "reqLocation": "Please enter the city and area/locality below — we'll mark it on the map automatically.",
+    "locAutoHint": "Enter the city and area/locality — we'll drop the pin on the map for you. You can then click/drag the map to fine-tune.",
+    "locating": "Finding location on the map…",
+    "locPinned": "Location marked on the map ✓"
   },
   "common": {
     "loading": "Loading…",

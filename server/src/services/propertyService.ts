@@ -222,6 +222,10 @@ export async function createProperty(dealerId: string, input: CreatePropertyInpu
     include: { images: true },
   });
 
+  // A buyer who posts a listing becomes a seller (owner) on the SAME account —
+  // no need for a second account. (No-op if they're already dealer/owner/admin.)
+  await prisma.user.updateMany({ where: { id: dealerId, role: 'buyer' }, data: { role: 'owner' } });
+
   // If it's published straight away, alert matching saved searches.
   if (!created.isDraft) notifyMatchingSavedSearches(created.id).catch(() => undefined);
   return created;

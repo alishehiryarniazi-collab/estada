@@ -79,14 +79,11 @@ export default function AuthModal() {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={closeAuth}
-    >
-      <div
-        className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      {/* Backdrop no longer closes the modal on click — prevents losing typed
+          details by an accidental outside click. Close via the X button only. */}
+      <div className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl">
+
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <LogoMark size={26} />

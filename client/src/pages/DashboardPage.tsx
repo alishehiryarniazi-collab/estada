@@ -26,7 +26,8 @@ export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
   const openAuth = useUiStore((s) => s.openAuth);
   const navigate = useNavigate();
-  const isDealer = user && user.role !== 'buyer';
+  // Any logged-in user can list a property from their own account.
+  const isDealer = !!user;
 
   const [listings, setListings] = useState<MyListing[]>([]);
   const [searches, setSearches] = useState<SavedSearch[]>([]);
