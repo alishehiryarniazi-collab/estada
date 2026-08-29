@@ -223,23 +223,23 @@ export default function PostListingPage() {
         <div className="mt-6 rounded-card border border-hairline bg-surface p-5">
           {step === 0 && (
             <div className="space-y-4">
-              <Input label="Listing title" value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="e.g. Modern 10 Marla House in DHA" />
+              <Input label={t('post.fTitle')} value={form.title} onChange={(e) => set('title', e.target.value)} placeholder={t('post.phTitle')} />
               <div>
-                <label className="mb-1 block text-sm font-medium text-ink">Description</label>
-                <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={5} className={field} placeholder="Describe the property, condition, features, nearby amenities…" />
+                <label className="mb-1 block text-sm font-medium text-ink">{t('post.fDescription')}</label>
+                <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={5} className={field} placeholder={t('post.phDescription')} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-ink">Property type</label>
+                  <label className="mb-1 block text-sm font-medium text-ink">{t('post.fType')}</label>
                   <select value={form.propertyType} onChange={(e) => set('propertyType', e.target.value)} className={field}>
-                    <option value="house">House</option><option value="flat">Flat</option><option value="plot">Plot</option>
-                    <option value="commercial">Commercial</option><option value="agricultural">Agricultural</option>
+                    <option value="house">{t('spec.house')}</option><option value="flat">{t('spec.flat')}</option><option value="plot">{t('spec.plot')}</option>
+                    <option value="commercial">{t('spec.commercial')}</option><option value="agricultural">{t('nav.agricultural')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-ink">Purpose</label>
+                  <label className="mb-1 block text-sm font-medium text-ink">{t('post.fPurpose')}</label>
                   <select value={form.listingType} onChange={(e) => set('listingType', e.target.value)} className={field}>
-                    <option value="sale">For Sale</option><option value="rent">For Rent</option>
+                    <option value="sale">{t('card.forSale')}</option><option value="rent">{t('card.forRent')}</option>
                   </select>
                 </div>
               </div>
@@ -248,22 +248,22 @@ export default function PostListingPage() {
 
           {step === 1 && (
             <div className="space-y-4">
-              <Input label={`Price (PKR)${form.listingType === 'rent' ? ' per month' : ''}`} type="number" value={form.price} onChange={(e) => set('price', e.target.value)} placeholder="e.g. 32000000" />
+              <Input label={`${t('post.fPrice')}${form.listingType === 'rent' ? t('post.perMonthSuffix') : ''}`} type="number" value={form.price} onChange={(e) => set('price', e.target.value)} placeholder="e.g. 32000000" />
               {form.price && Number(form.price) > 0 && (
                 <p className="-mt-2 text-sm text-verify">≈ {formatPricePKR(form.price)}</p>
               )}
               <div className="grid grid-cols-2 gap-3">
-                <Input label="Area" type="number" value={form.areaValue} onChange={(e) => set('areaValue', e.target.value)} placeholder="e.g. 10" />
+                <Input label={t('post.fArea')} type="number" value={form.areaValue} onChange={(e) => set('areaValue', e.target.value)} placeholder="e.g. 10" />
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-ink">Unit</label>
+                  <label className="mb-1 block text-sm font-medium text-ink">{t('post.fUnit')}</label>
                   <select value={form.areaUnit} onChange={(e) => set('areaUnit', e.target.value)} className={field}>
-                    <option value="marla">Marla</option><option value="sqft">Sq ft</option>
+                    <option value="marla">{t('post.unitMarla')}</option><option value="sqft">{t('post.unitSqft')}</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input label="Bedrooms (optional)" type="number" value={form.bedrooms} onChange={(e) => set('bedrooms', e.target.value)} />
-                <Input label="Bathrooms (optional)" type="number" value={form.bathrooms} onChange={(e) => set('bathrooms', e.target.value)} />
+                <Input label={t('post.fBedrooms')} type="number" value={form.bedrooms} onChange={(e) => set('bedrooms', e.target.value)} />
+                <Input label={t('post.fBathrooms')} type="number" value={form.bathrooms} onChange={(e) => set('bathrooms', e.target.value)} />
               </div>
             </div>
           )}
@@ -271,10 +271,10 @@ export default function PostListingPage() {
           {step === 2 && (
             <div className="space-y-4">
               <LocationPicker lat={form.lat} lng={form.lng} onChange={onLocation} />
-              <Input label="Full address (kept private until enquiry)" value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="House/Plot no, street, block…" />
+              <Input label={t('post.fAddress')} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder={t('post.phAddress')} />
               <div className="grid grid-cols-2 gap-3">
-                <Input label="City" value={form.city} onChange={(e) => set('city', e.target.value)} placeholder="Lahore" />
-                <Input label="Area / locality" value={form.areaName} onChange={(e) => set('areaName', e.target.value)} placeholder="DHA Phase 5" />
+                <Input label={t('post.fCity')} value={form.city} onChange={(e) => set('city', e.target.value)} placeholder="Lahore" />
+                <Input label={t('post.fLocality')} value={form.areaName} onChange={(e) => set('areaName', e.target.value)} placeholder="DHA Phase 5" />
               </div>
             </div>
           )}
@@ -283,7 +283,7 @@ export default function PostListingPage() {
             <div>
               <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-card border-2 border-dashed border-hairline bg-canvas py-10 text-center hover:border-primary">
                 {uploading ? <Loader2 className="animate-spin text-primary" /> : <Upload className="text-ink-muted" />}
-                <span className="text-sm text-ink-muted">{uploading ? 'Uploading…' : 'Click to upload photos (compressed automatically)'}</span>
+                <span className="text-sm text-ink-muted">{uploading ? t('post.uploading') : t('post.uploadCta')}</span>
                 <input type="file" accept="image/*" multiple hidden onChange={(e) => onFiles(e.target.files)} />
               </label>
               {form.images.length > 0 && (
@@ -291,7 +291,7 @@ export default function PostListingPage() {
                   {form.images.map((url, i) => (
                     <div key={url} className="group relative aspect-square overflow-hidden rounded-lg border border-hairline">
                       <img src={url} alt="" className="h-full w-full object-cover" />
-                      {i === 0 && <span className="absolute left-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[10px] text-white">Cover</span>}
+                      {i === 0 && <span className="absolute left-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[10px] text-white">{t('post.cover')}</span>}
                       <button onClick={() => set('images', form.images.filter((u) => u !== url))} className="absolute right-1 top-1 hidden rounded-full bg-black/60 p-1 text-white group-hover:block" aria-label="Remove">
                         <X size={12} />
                       </button>
@@ -299,14 +299,14 @@ export default function PostListingPage() {
                   ))}
                 </div>
               )}
-              <p className="mt-2 text-xs text-ink-muted">First photo is the cover. Add exterior, rooms, kitchen and bathroom photos for best results.</p>
+              <p className="mt-2 text-xs text-ink-muted">{t('post.photoHint')}</p>
 
               <div className="mt-4">
                 <Input
-                  label="Video tour link (optional)"
+                  label={t('post.fVideo')}
                   value={form.videoUrl}
                   onChange={(e) => set('videoUrl', e.target.value)}
-                  placeholder="YouTube / Vimeo URL — great for overseas buyers"
+                  placeholder={t('post.phVideo')}
                 />
               </div>
             </div>
@@ -314,13 +314,13 @@ export default function PostListingPage() {
 
           {step === 4 && (
             <div className="space-y-2 text-sm">
-              <Row k="Title" v={form.title} />
-              <Row k="Type" v={`${form.propertyType} · ${form.listingType}`} />
-              <Row k="Price" v={`PKR ${formatPricePKR(form.price || 0)}`} />
-              <Row k="Area" v={`${form.areaValue} ${form.areaUnit}`} />
-              <Row k="Location" v={`${form.areaName}, ${form.city}`} />
-              <Row k="Photos" v={`${form.images.length} uploaded`} />
-              <p className="pt-2 text-ink-muted">Publish to go live now, or save as a draft to finish later.</p>
+              <Row k={t('post.rTitle')} v={form.title} />
+              <Row k={t('post.rType')} v={`${t('spec.' + form.propertyType)} · ${form.listingType === 'rent' ? t('card.forRent') : t('card.forSale')}`} />
+              <Row k={t('post.rPrice')} v={`PKR ${formatPricePKR(form.price || 0)}`} />
+              <Row k={t('post.rArea')} v={`${form.areaValue} ${form.areaUnit === 'marla' ? t('post.unitMarla') : t('post.unitSqft')}`} />
+              <Row k={t('post.rLocation')} v={`${form.areaName}, ${form.city}`} />
+              <Row k={t('post.rPhotos')} v={t('post.photosUploaded', { n: form.images.length })} />
+              <p className="pt-2 text-ink-muted">{t('post.reviewNote')}</p>
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@
  * every keystroke.
  */
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { Search, MapPin } from 'lucide-react';
@@ -40,6 +41,7 @@ export default function LocationPicker({
   lng: number;
   onChange: (loc: PickedLocation) => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const hasPoint = lat !== 0 || lng !== 0;
@@ -77,7 +79,7 @@ export default function LocationPicker({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), search())}
-            placeholder="Search a place, e.g. DHA Phase 5 Lahore"
+            placeholder={t('post.locSearchPh')}
             className="w-full bg-transparent py-2.5 text-sm text-ink outline-none"
           />
         </div>
@@ -87,7 +89,7 @@ export default function LocationPicker({
           disabled={searching}
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-light disabled:opacity-60"
         >
-          {searching ? 'Finding…' : 'Find'}
+          {searching ? t('post.locFinding') : t('post.locFind')}
         </button>
       </div>
 
@@ -107,8 +109,7 @@ export default function LocationPicker({
         </MapContainer>
       </div>
       <p className="mt-2 flex items-center gap-1.5 text-xs text-ink-muted">
-        <MapPin size={13} /> Search a place or click the map to drop the pin. Buyers only ever see an
-        approximate location.
+        <MapPin size={13} /> {t('post.locNote')}
       </p>
     </div>
   );
