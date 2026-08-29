@@ -27,6 +27,7 @@ const NAV_LINKS = [
 export default function Navbar({ transparent = false }: { transparent?: boolean }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const user = useAuthStore((s) => s.user);
   const signOut = useAuthStore((s) => s.signOut);
   const openAuth = useUiStore((s) => s.openAuth);
@@ -96,7 +97,7 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
                 {user.name.split(' ')[0]}
               </Link>
               <button
-                onClick={() => signOut()}
+                onClick={() => setConfirmingSignOut(true)}
                 className={`rounded-lg px-2 py-2 text-sm font-medium ${linkColor}`}
               >
                 {t('nav.signOut')}
@@ -178,6 +179,33 @@ export default function Navbar({ transparent = false }: { transparent?: boolean 
             >
               {t('nav.postListing')}
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Sign-out confirmation — guards against an accidental click. */}
+      {confirmingSignOut && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-surface p-6 text-center shadow-xl">
+            <h2 className="font-heading text-lg font-semibold text-ink">{t('nav.confirmSignOutTitle')}</h2>
+            <p className="mt-1 text-sm text-ink-muted">{t('nav.confirmSignOutBody')}</p>
+            <div className="mt-5 flex gap-2">
+              <button
+                onClick={() => setConfirmingSignOut(false)}
+                className="flex-1 rounded-lg border border-hairline px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  setConfirmingSignOut(false);
+                  signOut();
+                }}
+                className="flex-1 rounded-lg bg-cta px-4 py-2.5 text-sm font-medium text-white hover:bg-cta-hover"
+              >
+                {t('nav.signOut')}
+              </button>
+            </div>
           </div>
         </div>
       )}

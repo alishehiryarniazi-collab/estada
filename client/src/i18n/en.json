@@ -10,7 +10,9 @@
     "admin": "Admin",
     "login": "Log in",
     "postListing": "Post Listing",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "confirmSignOutTitle": "Sign out?",
+    "confirmSignOutBody": "Are you sure you want to sign out of your account?"
   },
   "hero": {
     "badge": "Verified listings across Pakistan",
@@ -379,6 +381,7 @@
     "language": "Language",
     "pageNotFound": "Page not found",
     "comingSoon": "This screen is coming together — check back soon.",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "cancel": "Cancel"
   }
 }
