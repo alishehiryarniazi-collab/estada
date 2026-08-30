@@ -6,6 +6,7 @@
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import TrustStrip from '../components/TrustStrip';
+import HomeTools from '../components/HomeTools';
 import FeaturedListings from '../components/FeaturedListings';
 import Footer from '../components/Footer';
 
@@ -18,6 +19,8 @@ export default function HomePage() {
       <Hero />
 
       <TrustStrip />
+
+      <HomeTools />
 
       <FeaturedListings />
       <Footer />

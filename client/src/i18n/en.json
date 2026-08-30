@@ -250,7 +250,13 @@
     "enterIncome": "Enter your monthly income to see your budget.",
     "value": "Value",
     "unit": "Unit",
-    "equals": "{{value}} {{unit}} equals"
+    "equals": "{{value}} {{unit}} equals",
+    "homeTitle": "Plan your purchase",
+    "homeSubtitle": "Free calculators — no sign-up needed.",
+    "mortgageDesc": "Estimate your monthly payment",
+    "affordDesc": "See what you can afford",
+    "areaDesc": "Convert marla, kanal, sq ft",
+    "openAll": "Open all tools"
   },
   "dash": {
     "title": "Dashboard",
