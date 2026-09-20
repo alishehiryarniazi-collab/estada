@@ -17,6 +17,22 @@ Estada is a full-stack web app where dealers and owners list properties (houses,
 
 ---
 
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%" valign="top"><b>Search &amp; map</b><br/><sub>Filter by price, type, beds/area; list + interactive map with price pins.</sub><br/><img src="docs/screenshots/02-search.jpg" alt="Search results with map" /></td>
+    <td width="50%" valign="top"><b>Listing detail</b><br/><sub>Photo gallery, full spec table, approximate-pin privacy and enquiry.</sub><br/><img src="docs/screenshots/03-listing-detail.jpg" alt="Property listing detail" /></td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top"><b>Dealer dashboard</b><br/><sub>Manage listings, status, verification and view/save/enquiry counts.</sub><br/><img src="docs/screenshots/04-dealer-dashboard.jpg" alt="Dealer dashboard" /></td>
+    <td width="50%" valign="top"><b>Post a listing</b><br/><sub>Multi-step form: basics, details, location, photos and review.</sub><br/><img src="docs/screenshots/05-post-listing.jpg" alt="Multi-step post-a-listing form" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" valign="top"><b>Home</b><br/><sub>Landing page — search entry, featured listings and trust messaging.</sub><br/><img src="docs/screenshots/01-home.jpg" alt="Estada home page" /></td>
+  </tr>
+</table>
+
 ## Tech Stack
 
 | Layer | Choice |
